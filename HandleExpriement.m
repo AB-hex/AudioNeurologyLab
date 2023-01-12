@@ -21,6 +21,7 @@ function HandleExpriement(script,Button)
         if(ismissing(script{ii,1}))
             continue;
         end
+        %TODO: add random to speakers/files + repeat command + wait
         switch script{ii,1}
             case 'signal'
                 if( TXNumber > 3 )
