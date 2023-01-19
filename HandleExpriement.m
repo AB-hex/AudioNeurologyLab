@@ -17,8 +17,14 @@ function HandleExpriement(script,Button)
     currPath = '';
     currSignal = '';
     load mdb;
-    for ii = 1:length(script)
+    startLineRepeat = 0;
+    endLineRepeat = -1;
+    repeatCounter = -1;
+    durationInSec = 0;
+    ii = 1;
+    while ii <= length(script)
         if(ismissing(script{ii,1}))
+            ii = ii + 1;
             continue;
         end
         %TODO: add random to speakers/files + repeat command + wait
@@ -148,17 +154,18 @@ function HandleExpriement(script,Button)
                    return;
                   end
                   durationInSec =  script{ii,2}/1000; %convert from millisec to seconds
-                  mdb.TX1.stimulus.burstDuration =   durationInSec;
-                  mdb.TX2.stimulus.burstDuration =   durationInSec;
-                  mdb.TX3.stimulus.burstDuration =   durationInSec;  
+                  mdb.TX1.stimulus.burstDuration =  durationInSec;% durationInSec;
+                  mdb.TX2.stimulus.burstDuration =  durationInSec; %durationInSec;
+                  mdb.TX3.stimulus.burstDuration =  durationInSec; %durationInSec;  
             case 'play'
                 if(0 == mdb.TX1.stimulus.burstDuration)
                    ErrorMessage(ii,'Missing duration value parameter','No duration');
                    return;
                 end 
                 save mdb mdb;
+                tic
                 [TX1_playMode,TX2_playMode,TX3_playMode] = play_signal_multi(mdb.master.TX1_select,mdb.master.TX2_select,mdb.master.TX3_select); 
-                pause(mdb.TX1.stimulus.burstDuration);
+                pause(durationInSec );
                 TXall_stop_signal();
                 
                 Initialize_Selection("TX1");
@@ -166,11 +173,26 @@ function HandleExpriement(script,Button)
                 Initialize_Selection("TX3");
                 TXNumber = 1;
                 load mdb;
+            case 'start repeat'
+                 startLineRepeat = ii;
+            case 'end repeat'
+                if(endLineRepeat == ii) %Make another repeat
+                    repeatCounter =  repeatCounter + 1;
+                else %first time in repeat - INITILIZE 
+                    endLineRepeat = ii;
+                    repeatCounter = 0;
+                end
+                
+                if(repeatCounter < script{ii,2})
+                    ii = startLineRepeat;
+                end
+
             otherwise
-                ErrorMessage(ii,strcat('The word "',script{ii,1},'"  is invalid'),'Unregonized option');
+                ErrorMessage(ii,strcat('The word "',script{ii,1},'"  is invalid'),'Unrecgonized option');
                 return;
                   
         end
+        ii = ii + 1;
     end
        save mdb mdb;
        Button.Value = 0;
