@@ -27,7 +27,7 @@ function HandleExpriement(script,Button)
             ii = ii + 1;
             continue;
         end
-        %TODO: add random to speakers/files + repeat command + wait
+        %TODO: add random to files in folder + wait
         switch script{ii,1}
             case 'signal'
                 if( TXNumber > 3 )
@@ -145,6 +145,12 @@ function HandleExpriement(script,Button)
                 else 
                     selectedSpeakers = cellfun(@(x) str2double(x),strsplit(script{ii,2},','));
                 end
+                if(strcmp(script{ii,3},'random')) %for random support
+                    random_idx = randi([1 length(selectedSpeakers)] , 1,script{ii,4});
+                    selectedSpeakers = selectedSpeakers(random_idx);
+                end
+                    
+                    
                 mdb.(strcat('TX',num2str(TXNumber))).transducer.FF.DacVector(selectedSpeakers) = 1;
                 TXNumber = TXNumber + 1;
                 
@@ -186,6 +192,9 @@ function HandleExpriement(script,Button)
                 if(repeatCounter < script{ii,2})
                     ii = startLineRepeat;
                 end
+            case 'random output'
+                
+                
 
             otherwise
                 ErrorMessage(ii,strcat('The word "',script{ii,1},'"  is invalid'),'Unrecgonized option');
