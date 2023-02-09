@@ -17,10 +17,19 @@ function HandleExpriement(script,Button)
     currPath = '';
     currSignal = '';
     load mdb;
-    for ii = 1:length(script)
+    startLineRepeat = 0;
+    endLineRepeat = -1;
+    repeatCounter = -1;
+    durationInSec = 0;
+    ii = 1;
+    while ii <= length(script)
         if(ismissing(script{ii,1}))
+            ii = ii + 1;
             continue;
         end
+        %TODO: add random to files in folder + wait
+        %TODO: add random by satistics inside folder and speakers
+        %TODO: add more options of random for diffenet signals
         switch script{ii,1}
             case 'signal'
                 if( TXNumber > 3 )
@@ -48,13 +57,18 @@ function HandleExpriement(script,Button)
                             else
                                  ErrorMessage(ii,'No noise mod is detected','No noise mode');
                             end
-                            %TODO add file selection path support
                         case 'file'
                              mdb.master.(strcat('TX',num2str(TXNumber),'_select')) = 1;
                              currPath = {strcat('TX',num2str(TXNumber));'stimulus';'speech'};
                              mdb.(strcat('TX',num2str(TXNumber))).stimulus.stimulusSelect.speech = 1;
+                             mdb.(strcat('TX',num2str(TXNumber))).stimulus.speech.source = script{ii,3};
+                             currSignal = 'File';
                              
-                             
+                        case 'folder'
+                            mdb.master.(strcat('TX',num2str(TXNumber),'_select')) = 1;
+                            currPath = {strcat('TX',num2str(TXNumber));'stimulus';'speech'};
+                            mdb.(strcat('TX',num2str(TXNumber))).stimulus.stimulusSelect.speech = 1;
+                            
                         otherwise 
                             ErrorMessage(ii,'Signal was not recognised','Unrecognised Signal');
                             return;  
@@ -107,6 +121,7 @@ function HandleExpriement(script,Button)
             case 'AM'
                 if(~strcmp(currSignal,'Pure Tone'))
                     ErrorMessage(ii,'AM Modulation not in pure tone signal','Error');
+                    return
                 end
                 AMMode = 1;
                 modulationType = PTModulationModeHelper(FMMode,AMMode);
@@ -115,17 +130,20 @@ function HandleExpriement(script,Button)
             case 'mod freq'
                 if(~strcmp(currSignal,'Pure Tone'))
                     ErrorMessage(ii,'mod freq outside pure tone','Error');
+                    return;
                 end
                 mdb = setfield(mdb,currPath{:},'modFreq',script{ii,2});
                 
             case 'nb center freq'
                 if(~strcmp(currSignalm,'Noise')||getfield(mdb,currPath{:},'source')~= 2)
                    ErrorMessage(ii,'mod center freq outside is not in NB noise','Error');
+                   return;
                 end 
                 mdb = setfield(mdb,currPath{:},'NBCntrFrq',script{ii,2});
             case 'nb bw'
                 if(~strcmp(currSignalm,'Noise')||getfield(mdb,currPath{:},'source')~= 2)
                    ErrorMessage(ii,'mod center freq outside is not in NB noise','Error');
+                   return;
                 end 
                 mdb = setfield(mdb,currPath{:},'NBBW',script{ii,2});
                 
@@ -135,26 +153,45 @@ function HandleExpriement(script,Button)
                 else 
                     selectedSpeakers = cellfun(@(x) str2double(x),strsplit(script{ii,2},','));
                 end
+                if(strcmp(script{ii,3},'random')) %for random support
+                    random_idx = randi([1 length(selectedSpeakers)] , 1,script{ii,4});
+                    selectedSpeakers = selectedSpeakers(random_idx);
+                end
+                    
+                    
                 mdb.(strcat('TX',num2str(TXNumber))).transducer.FF.DacVector(selectedSpeakers) = 1;
                 TXNumber = TXNumber + 1;
                 
             case 'duration'
-                  if(~isnumeric(script{ii,2}))
-                   ErrorMessage(ii,'Duration value have to be numeric','Duration Not Numeric');
-                   return;
+%                   if(~isnumeric(script{ii,2}))
+%                    ErrorMessage(ii,'Duration value have to be numeric','Duration Not Numeric');
+%                    return;
+%                   end
+                  
+                  if(isnumeric(script{ii,2}))
+                    durationInSec =  script{ii,2}/1000; %convert from millisec to seconds
+                  elseif(strcmp(script{ii,2},'file'))
+                    idxTX = find(arrayfun(@(x) getfield(mdb,strcat('TX',num2str(x)),'stimulus','stimulusSelect','speech'),[1:3]),1);
+                    if(isempty(idxTX))
+                        ErrorMessage(ii,'no file signal chosen but duration is file','No file signal');
+                    end
+                    [y,Fs] = audioread(mdb.(strcat('TX',num2str(idxTX))).stimulus.speech.source);
+                    durationInSec = length(y)/Fs;
                   end
-                  durationInSec =  script{ii,2}/1000; %convert from millisec to seconds
-                  mdb.TX1.stimulus.burstDuration =   durationInSec;
-                  mdb.TX2.stimulus.burstDuration =   durationInSec;
-                  mdb.TX3.stimulus.burstDuration =   durationInSec;  
+
+                  mdb.TX1.stimulus.burstDuration =  durationInSec;% durationInSec;
+                  mdb.TX2.stimulus.burstDuration =  durationInSec; %durationInSec;
+                  mdb.TX3.stimulus.burstDuration =  durationInSec; %durationInSec;
+
             case 'play'
                 if(0 == mdb.TX1.stimulus.burstDuration)
                    ErrorMessage(ii,'Missing duration value parameter','No duration');
                    return;
                 end 
                 save mdb mdb;
+                tic
                 [TX1_playMode,TX2_playMode,TX3_playMode] = play_signal_multi(mdb.master.TX1_select,mdb.master.TX2_select,mdb.master.TX3_select); 
-                pause(mdb.TX1.stimulus.burstDuration);
+                pause(durationInSec + 0.175 );
                 TXall_stop_signal();
                 
                 Initialize_Selection("TX1");
@@ -162,11 +199,29 @@ function HandleExpriement(script,Button)
                 Initialize_Selection("TX3");
                 TXNumber = 1;
                 load mdb;
+            case 'start repeat'
+                 startLineRepeat = ii;
+            case 'end repeat'
+                if(endLineRepeat == ii) %Make another repeat
+                    repeatCounter =  repeatCounter + 1;
+                else %first time in repeat - INITILIZE 
+                    endLineRepeat = ii;
+                    repeatCounter = 0;
+                end
+                
+                if(repeatCounter < script{ii,2})
+                    ii = startLineRepeat;
+                end
+            case 'folder'
+                
+                
+
             otherwise
-                ErrorMessage(ii,strcat('The word "',script{ii,1},'"  is invalid'),'Unregonized option');
+                ErrorMessage(ii,strcat('The word "',script{ii,1},'"  is invalid'),'Unrecgonized option');
                 return;
                   
         end
+        ii = ii + 1;
     end
        save mdb mdb;
        Button.Value = 0;
