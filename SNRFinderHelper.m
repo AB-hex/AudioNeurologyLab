@@ -1,6 +1,10 @@
 function SNRFinderHelper(app) 
-    %TODO: Track all data  b
-
+    %TODO: Track all data  and output it to output foler
+    %TODO: show the word to the user using speech2text
+    %TODO: add advanced controllers
+    %Dont exit first phase untill success% is less then 100
+    %TODO: add repeat button when changing a word and change the for loop
+    %to while
     d = uiprogressdlg(app.UIFigure,'Title','Please Wait',...
     'Message','Starting ','Indeterminate','on');
     pause(2);
@@ -181,11 +185,9 @@ function SNRFinderHelper(app)
         
         
     end
-
-    y = SNRData.Success;
-    x = SNRData.SNR;
-    y = y/sum(y)*100;
-    plot(x,y);
+    t = table(SNRData.SNR',SNRData.Success','VariableNames',{'SNR','SUCCESS'});
+    t= sortrows(t);
+    plot(t.SNR,t.SUCCESS*100 );
     xlabel('SNR');
     ylabel('Percentage');
     ylim([0 100]);
