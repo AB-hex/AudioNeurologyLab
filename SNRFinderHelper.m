@@ -1,10 +1,8 @@
 function SNRFinderHelper(app) 
     %TODO: Track all data  and output it to output foler
-    %TODO: show the word to the user using speech2text
     %TODO: add advanced controllers
-    %Dont exit first phase untill success% is less then 100
-    %TODO: add repeat button when changing a word and change the for loop
-    %to while
+    %TODO: add choosing to hear the word 
+    %TODO: add presentation to the word
     d = uiprogressdlg(app.UIFigure,'Title','Please Wait',...
     'Message','Starting ','Indeterminate','on');
     pause(2);
@@ -65,12 +63,13 @@ function SNRFinderHelper(app)
     while(Idx.jump <= length(jumpOrder) && ...
             Idx.NumOfWords <= length(NumOfWordsOrder) &&...
             Idx.currentPlay <= length(playOrder) )
+        
         stats = "[Signal: " + mdb.TX1.stimulus.speech.amp + " db , Noise: " + mdb.TX2.stimulus.noise.amp + " db]";
         indicatorNextStep = -10; %setting here 1 or -1 will help to know if I need to rise or lower
         NumOfWords = NumOfWordsOrder(Idx.NumOfWords);
         recordedResponse = zeros([1 NumOfWords]);
-        
-        for ii=1:NumOfWords
+        ii=1;
+        while ii<=NumOfWords
             name = wordsDir(playOrder(Idx.currentPlay)).name;
             filename = fullfile(wordsDir(playOrder(Idx.currentPlay)).folder,name);
             msg = stats+newline+ "Playing "+ii+" word out of "+NumOfWords+newline+name;
@@ -87,23 +86,30 @@ function SNRFinderHelper(app)
             [TX1_playMode,TX2_playMode,TX3_playMode] = play_signal_multi(mdb.master.TX1_select,mdb.master.TX2_select,mdb.master.TX3_select); 
             pause(durationInSec + 0.175 );
             TXall_stop_signal();
-            Idx.currentPlay = Idx.currentPlay + 1;
             close(d);
             load mdb;
             msg = msg +newline+ 'The word was repeated this correctly?';
             selection = uiconfirm(app.UIFigure,msg,'Confirm response'...
-                                  ,'Options', {'Correct','Wrong','Cancel'});
-            if(strcmp(selection,'Cancel')) 
-                return;
+                                  ,'Options', {'Correct','Wrong','Repeat','Cancel'});
+           
+            switch selection
+                case 'Correct'
+                    recordedResponse(ii) = 1;
+                case 'Wrong'
+                    recordedResponse(ii) = 0;
+                case 'Repeat' 
+                    continue;
+                case 'Cancel'
+                    return;
             end
-            recordedResponse(ii) = strcmp(selection,'Correct');
-            
+            ii = ii+1;
+            Idx.currentPlay = Idx.currentPlay + 1;
             
         end
         relativeSuccess = sum(recordedResponse)/NumOfWords;        
         
         if(beginningStageFlag)
-            if( 1 == relativeSuccess)
+            if( 1 == relativeSuccess )
                 indicatorNextStep = 1;
             else
                 indicatorNextStep = -1;
@@ -123,32 +129,32 @@ function SNRFinderHelper(app)
         Options = {'Confirm','Repeat last round','Cancel'};
         switch indicatorNextStep
             case 1
-                title = "Increasing the Noise"
+                title = "Increasing the Noise";
                 msg = "The Noise will be increased by " + jumpOrder(Idx.jump) ...
-                     + " db "
+                     + " db ";
                  if(~beginningStageFlag)
                      msg = msg + " Because success was more then 50%";
                  end
                  msg = msg +newline+ "New Noise will be "+(jumpOrder(Idx.jump) + mdb.TX2.stimulus.noise.amp)+...
                               " db.";
             case -1
-                title = "Decreasing the Noise"
+                title = "Decreasing the Noise";
                 msg = "The Noise will be decrease by " + jumpOrder(Idx.jump) ...
-                     + " db"
+                     + " db";
                 if(~beginningStageFlag)
                    msg = msg + " Because success was less then 50%";
                 end
                  msg = msg +newline+ "New Noise will be "+ ( mdb.TX2.stimulus.noise.amp - jumpOrder(Idx.jump))+...
                               " db.";
             case 0 
-                title = "The final Threshold"
+                title = "The final Threshold";
                 msg = "Success was 50% then the final SNR threshold is " +...
                        (mdb.TX1.stimulus.speech.amp - mdb.TX2.stimulus.noise.amp) ;
                    Options = {'Finish the test','Repeat last round','Cancel'};
             otherwise
-                title = "Error"
-                msg = "Error"
-                end
+                title = "Error";
+                msg = "Error";
+        end
             
         selection = uiconfirm(app.UIFigure,stats+newline+msg,title...
                             ,'Options', Options);
@@ -162,10 +168,10 @@ function SNRFinderHelper(app)
                         mdb.TX2.stimulus.noise.amp = ...
                             indicatorNextStep*jumpOrder(Idx.jump) + ...
                             mdb.TX2.stimulus.noise.amp;
-                        
-                        Idx.jump = Idx.jump +1;
-                        
-                        if( beginningStageFlag )
+                        if(~beginningStageFlag)
+                            Idx.jump = Idx.jump +1;
+                        end
+                        if( beginningStageFlag && (-1 == indicatorNextStep ))
                             Idx.NumOfWords = Idx.NumOfWords + 1;
                             beginningStageFlag = 0 ; %end of begining
                         end
@@ -187,7 +193,7 @@ function SNRFinderHelper(app)
     end
     t = table(SNRData.SNR',SNRData.Success','VariableNames',{'SNR','SUCCESS'});
     t= sortrows(t);
-    plot(t.SNR,t.SUCCESS*100 );
+    plot(t.SNR,t.SUCCESS*100 ,'*');
     xlabel('SNR');
     ylabel('Percentage');
     ylim([0 100]);
