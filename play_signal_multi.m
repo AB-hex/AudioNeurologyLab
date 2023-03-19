@@ -6,14 +6,14 @@
 
 function  [TX1_playMode,TX2_playMode,TX3_playMode] = play_signal_multi(TX1, TX2, TX3)
 
-
+    
 
     %bufpts=500000;  % Size of the serial buffer
     bufpts=3000000;  % Size of the serial buffer
     f_samp=24414.0625;
     global RP;
-  
-
+    Update_Calibration(RP);
+    
     %snr = 0;  % in dB    min SNR is -6dB
     %add_noise=0;    %0 -> no noise, 1 -> add noise
     %use_2_dac = 1;   % 0-> single DAC   1-> two DACs
