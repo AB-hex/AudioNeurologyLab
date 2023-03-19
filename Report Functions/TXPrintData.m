@@ -13,10 +13,11 @@ function str=TXPrintData(num , mdb)
         mode = 'Speech';
     end
     
-    
+    map = mdb.Calibration.FF2SpeakerMap
     str = [TXString,': ',mode,newline,...
-           'Active Output: ',num2str(find(mdb.(TXString).transducer.FF.DacVector)),...
-           newline];
+           'Active Output(FF): ',num2str(find(mdb.(TXString).transducer.FF.DacVector)),...
+           newline
+           'Active Speakers (By map): ',num2str(map(find(mdb.(TXString).transducer.FF.DacVector)))];
     if(0==mdb.(TXString).stimulus.burstDuration)
         str = [str ...
                'Duration: Continues' newline];
