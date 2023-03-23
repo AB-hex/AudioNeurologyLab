@@ -1,12 +1,11 @@
 function SNRFinderHelper(app) 
-    %TODO: Track all data  and output it to output foler
-    %TODO: add advanced controllersl
     d = uiprogressdlg(app.UIFigure,'Title','Please Wait',...
     'Message','Starting ','Indeterminate','on');
     pause(2);
     wordsDir = dir(app.ChooseFolderButton.Text+"/*.wav");
     SNRData = struct('SNR',[],'Success',[]);
     history = {};
+    SuspectedSNR = [];
     
     if(length(wordsDir)<25)
         uialert(app.UIFigure,'Too little .wav files. Has to be 25 at least','Error');
@@ -40,8 +39,8 @@ function SNRFinderHelper(app)
     [mdb.TX1.stimulus.stimulusSelect.speech, mdb.TX2.stimulus.stimulusSelect.noise ] = deal(1,1);
     
     playOrder = randperm(length(wordsDir));
-    jumpOrder = [10,5,2,1];
-    NumOfWordsOrder = [2,4];
+    jumpOrder = [10,5,3,2];
+    NumOfWordsOrder = [2,6];
     cretionThreshold = 0.5;
     [Idx.jump , Idx.NumOfWords, Idx.currentPlay] = deal(1,1,1);
     beginningStageFlag = 1;%to imply when we are not in the beginning
@@ -52,10 +51,7 @@ function SNRFinderHelper(app)
     close(d);
     
     while( true)
-        if(Idx.currentPlay > length(playOrder))
-           uialert(app.UIFigure,'All Words had been played.','Out of words');
-            return;
-        end
+
             
         stats = "[Signal: " + mdb.TX1.stimulus.speech.amp + " dB , Noise: " + mdb.TX2.stimulus.noise.amp + " dB]";
         indicatorNextStep = -10; %setting here 1 or -1 will help to know if I need to rise or lower
@@ -63,6 +59,10 @@ function SNRFinderHelper(app)
         recordedResponse = zeros([1 NumOfWords]);
         ii=1;
         while ii<=NumOfWords
+            if(Idx.currentPlay > length(playOrder))
+               uialert(app.UIFigure,'All Words had been played.','Out of words');
+                return;
+            end
             name = wordsDir(playOrder(Idx.currentPlay)).name;
             filename = fullfile(wordsDir(playOrder(Idx.currentPlay)).folder,name);
             msg = stats+newline+ "Playing "+ii+" word out of "+NumOfWords+newline+name;
@@ -100,16 +100,19 @@ function SNRFinderHelper(app)
             ii = ii+1;
             Idx.currentPlay = Idx.currentPlay + 1;
             historyEntry{end+1} = stats;
+            historyEntry{end+1} = mdb.TX1.stimulus.speech.amp - mdb.TX2.stimulus.noise.amp;
             history(end+1,:) = historyEntry;
         end
        
         relativeSuccess = sum(recordedResponse)/NumOfWords;        
         
         if(beginningStageFlag)
-            if( 1 == relativeSuccess )
-                indicatorNextStep = 1;
-            else
+            if( 0 == relativeSuccess )
                 indicatorNextStep = -1;
+%                 Idx.jump = Idx.jump +1;
+            else
+                indicatorNextStep = 1;
+                
             end
             
         else
@@ -125,24 +128,29 @@ function SNRFinderHelper(app)
         msg = "";
         Options = {'Confirm','Repeat last round','Cancel'};
         switch indicatorNextStep
-            case 1
+            case 1  
                 title = "Increasing the Noise";
                 msg = "The Noise will be increased by " + jumpOrder(Idx.jump) ...
                      + " dB ";
-                 if(~beginningStageFlag)
+                if(~beginningStageFlag)
                      msg = msg + " Because success was more then 50%";
                  end
                  msg = msg +newline+ "New Noise will be "+(jumpOrder(Idx.jump) + mdb.TX2.stimulus.noise.amp)+...
                               " dB.";
             case -1
                 title = "Decreasing the Noise";
+                if(beginningStageFlag)
+                   msg = "The noise will be averaged automatically by last time SNR was 100% correct"+newline+...
+                         "and when SNR was 0% correct feedback, new SNR will be in the middle beween the two values";
+                else
                 msg = "The Noise will be decrease by " + jumpOrder(Idx.jump) ...
                      + " dB";
-                if(~beginningStageFlag)
+                
                    msg = msg + " Because success was less then 50%";
-                end
-                 msg = msg +newline+ "New Noise will be "+ ( mdb.TX2.stimulus.noise.amp - jumpOrder(Idx.jump))+...
+                   msg = msg +newline+ "New Noise will be "+ ( mdb.TX2.stimulus.noise.amp - jumpOrder(Idx.jump))+...
                               " dB.";
+                end
+                 
             case 0 
                 title = "The final Threshold";
                 msg = "Success was 50% then the final SNR threshold is " +...
@@ -156,23 +164,35 @@ function SNRFinderHelper(app)
         selection = uiconfirm(app.UIFigure,stats+newline+msg,title...
                             ,'Options', Options);
                 
-                        
                 switch selection
                     case 'Confirm'
-                        %updating SNR and success data 
-                        SNRData.SNR = [SNRData.SNR ( mdb.TX1.stimulus.speech.amp - mdb.TX2.stimulus.noise.amp)];
-                        SNRData.Success = [SNRData.Success relativeSuccess];
-                        mdb.TX2.stimulus.noise.amp = ...
-                            indicatorNextStep*jumpOrder(Idx.jump) + ...
-                            mdb.TX2.stimulus.noise.amp;
-
-                        if( beginningStageFlag && (-1 == indicatorNextStep ))
-                            Idx.NumOfWords = Idx.NumOfWords + 1;
+                          SNRData.SNR = [SNRData.SNR ( mdb.TX1.stimulus.speech.amp - mdb.TX2.stimulus.noise.amp)];
+                          SNRData.Success = [SNRData.Success relativeSuccess];
+                       if( beginningStageFlag && (-1 == indicatorNextStep ))
                             beginningStageFlag = 0 ; %end of begining
-                        end
-                        if(~beginningStageFlag && (Idx.jump<length(jumpOrder)))
-                            Idx.jump = Idx.jump +1;
-                        end
+                            start = SNRData.SNR(find(SNRData.Success == 1,1,'last'));
+                            last = SNRData.SNR(find(SNRData.Success == 0,1));
+                            mdb.TX2.stimulus.noise.amp = mdb.TX1.stimulus.speech.amp - round(mean([start last]));
+                            Idx.NumOfWords = Idx.NumOfWords +1 ; 
+                           while( ( jumpOrder(Idx.jump)>= abs(last-start)*0.5 ) &&  Idx.jump<length(jumpOrder))
+                             Idx.jump = Idx.jump + 1;
+                           end
+                       else
+                        
+                            %updating SNR and success data
+                            mdb.TX2.stimulus.noise.amp = ...
+                                indicatorNextStep*jumpOrder(Idx.jump) + ...
+                                mdb.TX2.stimulus.noise.amp;
+                            
+                            if(any(SNRData.SNR == (mdb.TX1.stimulus.speech.amp - mdb.TX2.stimulus.noise.amp)))
+                                SuspectedSNR(end + 1) = (mdb.TX1.stimulus.speech.amp - mdb.TX2.stimulus.noise.amp);
+                            end
+                            if(Idx.jump<length(jumpOrder))
+                             Idx.jump = Idx.jump +1;
+                            end
+                       end
+                    
+        
 
                     case 'Repeat last round'
                         continue;
@@ -184,7 +204,14 @@ function SNRFinderHelper(app)
                         return;
                 end
     
-
+            if(length(SuspectedSNR)>=2 && any(SuspectedSNR(end)==SNRData.SNR(end-2:end))...
+                    && any(SuspectedSNR(end-1)==SNRData.SNR(end-2:end)))
+                FinalSNR = mean(SuspectedSNR(end-1:end));
+                SNRData.SNR = [SNRData.SNR FinalSNR];
+                SNRData.Success = [SNRData.Success 0.5];
+                break;
+            end
+                
                     
         
         
@@ -195,12 +222,12 @@ function SNRFinderHelper(app)
                        'Gender',app.GenderEditField.Value;...
                        'Ear', app.EarEditField.Value;...
                        'Test', app.TestNameEditField.Value };
-    history = cell2table(history,'VariableNames',{'Words','Result','Signal and Nosie'});               
+    history = cell2table(history,'VariableNames',{'Words','Result','Signal and Nosie','SNR'});               
     
     outputFile = fullfile(app.CUsersLabDocumentsButton.Text,[app.NameoffiileEditField.Value '.xlsx']);
     writecell(personalDetails,outputFile,'Sheet',1,'Range','A1');
     writetable(history,outputFile,'Sheet',1,'Range','H1');
-    writematrix(PrintData(mdb)',outputFile,'Sheet',1,'Range','K1');
+    writematrix(PrintData(mdb)',outputFile,'Sheet',1,'Range','L1');
     
     t = table(SNRData.SNR',SNRData.Success','VariableNames',{'SNR','SUCCESS'});
     t= sortrows(t);
