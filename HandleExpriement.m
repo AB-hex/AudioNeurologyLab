@@ -150,7 +150,11 @@ function HandleExpriement(script,Button)
                    return;
                 end 
                 mdb = setfield(mdb,currPath{:},'NBBW',script{ii,2});
-                
+            
+            case 'onset'
+                 mdb.("TX"+TXNumber).stimulus.onset = script{ii,2};
+            case 'offset'
+                 mdb.("TX"+TXNumber).stimulus.offset = script{ii,2};
             case 'output ports'
                 if(isnumeric(script{ii,2}))
                     selectedSpeakers = script{ii,2};
@@ -217,21 +221,21 @@ function HandleExpriement(script,Button)
                 if(repeatCounter < script{ii,2})
                     ii = startLineRepeat;
                 end
-            case 'folder playing options'
-                filesDir =  dir(folderPath);
-                filesDir = filesDir(~[filesDir.isdir]); %remove nonfile entries
-                switch script{ii,2}
-                    case 'ascending'
-                        playOrder = [1:1:length(filesDir)];
-                    case 'descending'
-                        playOrder = [length(filesDir):-1:1];
-                    case 'random'
-                        playOrder = randperm(length(filesDir));
-                end
-            case 'pause'
+%             case 'folder playing options'
+%                 filesDir =  dir(folderPath);
+%                 filesDir = filesDir(~[filesDir.isdir]); %remove nonfile entries
+%                 switch script{ii,2}
+%                     case 'ascending'
+%                         playOrder = [1:1:length(filesDir)];
+%                     case 'descending'
+%                         playOrder = [length(filesDir):-1:1];
+%                     case 'random'
+%                         playOrder = randperm(length(filesDir));
+%                 end
+            case 'wait'
                 %TODO: add mdb printing 
                 uiwait(msgbox('Here will be displayed the mdb state'));
-            case 'wait'
+            case 'pause'
                 pause(script{ii,2});
             otherwise
                 ErrorMessage(ii,strcat('The word "',script{ii,1},'"  is invalid'),'Unrecgonized option');
