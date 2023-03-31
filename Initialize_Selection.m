@@ -32,6 +32,8 @@ mdb.(TXString).stimulus.speech.amp=30;
 mdb.(TXString).stimulus.speech.phase = 0;
 
 mdb.(TXString).stimulus.burstDuration = 0;
+mdb.(TXString).stimulus.onset = 0;
+mdb.(TXString).stimulus.offset = 0;
 save mdb mdb;
 
 end

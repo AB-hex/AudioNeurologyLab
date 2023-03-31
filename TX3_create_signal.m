@@ -119,7 +119,9 @@ function  [TX3_signal,playMode] = TX3_create_signal( )
 
      sig3_new(1:length(sig_noise)) = sig_noise;
      sig_noise = sig3_new;
-          
+     
+     
+     [sig1,sig2,sig_noise] = CuttingOnsetOffset(sig1,sig2,sig_noise,f_samp,mdb.TX3.stimulus.onset  ,mdb.TX3.stimulus.offset  );
      TX3_signal = sig1 + sig2 + sig_noise;
      
 end

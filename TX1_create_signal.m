@@ -124,7 +124,10 @@ function  [TX1_signal,playMode] = TX1_create_signal( )
 
      sig3_new(1:length(sig_noise)) = sig_noise;
      sig_noise = sig3_new;
-          
+     
+     %Cutting onset and offset of the signal
+     [sig1,sig2,sig_noise] = CuttingOnsetOffset(sig1,sig2,sig_noise,f_samp,mdb.TX1.stimulus.onset  ,mdb.TX1.stimulus.offset  );
+
      TX1_signal = sig1 + sig2 + sig_noise;
      
 end
