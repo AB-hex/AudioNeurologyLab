@@ -47,7 +47,7 @@ load mdb
                      mdb.(TXNumber).stimulus.stimulusSelect.speech = 1;
                      mdb.(TXNumber).stimulus.speech.amp = AppOptions.amplitudeEditField.Value;
                      mdb.(TXNumber).stimulus.speech.phase = AppOptions.phasedegDropDown.Value;
-                     mdb.(TXNumber).stimulus.speech.source = AppOptions.ChooseButton.Text;
+                     mdb.(TXNumber).stimulus.speech.source = AppOptions.FullPath;
         end
         
     end

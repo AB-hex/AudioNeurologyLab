@@ -1,4 +1,7 @@
 function SNRFinderHelper(app) 
+%Do limits check that we don't return to the same points
+%TODO: improve the function by assuming the SNR is always rasing function
+%and find the mid term value by using middle value
     d = uiprogressdlg(app.UIFigure,'Title','Please Wait',...
     'Message','Starting ','Indeterminate','on');
     pause(2);
