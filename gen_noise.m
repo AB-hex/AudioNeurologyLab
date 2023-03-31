@@ -16,7 +16,7 @@ end
 
 noise_tmp = whiteNoise_vector(1:num_of_points);
 
-if is_white == 1,
+if is_white == 1
     %noise = randn(1,num_of_points);
     noise = noise_tmp;
     
