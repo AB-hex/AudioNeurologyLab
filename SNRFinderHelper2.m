@@ -45,26 +45,28 @@ function SNRFinderHelper2(app)
     [Idx.NumOfWords, Idx.currentPlay] = deal(1,1);
     beginningStageFlag = 1;%to imply when we are not in the beginning
     
-    signalLevel = app.SignaldbEditField.Value;
-    noiseLevel = app.NoisedbEditField.Value;
+    signalLevel = app.SignaldBEditField.Value;
+    noiseLevel = app.NoisedBEditField.Value;
     
     close(d);
     
-    NumOfWords = NumOfWordsOrder(Idx.NumOfWords);
     
     
-    [success,record,history,Idx,resultSNR,bottom,up] = SNRFinderPhase1Step(app,...
+    [success,record,history,Idx,resultSNR,up,bottom] = SNRFinderPhase1Step(app,...
                                            signalLevel,noiseLevel,...
-                                           record,history,NumOfWords,...
-                                           Idx,playOrder,wordsDir,jump);
+                                           record,history,NumOfWordsOrder(Idx.NumOfWords),...
+                                           Idx,playOrder,wordsDir,10,-100,-100);
     if(-1 == success)
         return;
     end
     Idx.NumOfWords = Idx.NumOfWords + 1;
-    NumOfWords = NumOfWordsOrder(Idx.NumOfWords);
-        [success,record,history,Idx,resultSNR] = SNRFinderPhase2Step(app,...
+    
+% app1 = app;
+% load("C:\Users\Lab\Desktop\matlab_phase1.mat")
+% app = app1;
+[success,record,history,Idx,resultSNR] = SNRFinderPhase2Step(app,...
                                            signalLevel,signalLevel-resultSNR,...
-                                           record,history,NumOfWords,...
+                                           record,history,NumOfWordsOrder(Idx.NumOfWords),...
                                            Idx,playOrder,wordsDir,bottom,up);
                                        
         if(-1 == success)
@@ -106,7 +108,7 @@ function SNRFinderHelper2(app)
             return;     
        end               
     
-      outputExcel =  fullfile(app.CUsersLabDocumentsButton.Text,[app.NameoffiileEditField.Value '.xlsx']);
+      outputExcel =  fullfile(app.CUsersLabDocumentsButton.Text,app.NameoffiileEditField.Value,[app.NameoffiileEditField.Value '.xlsx']);
       outputFolder = fullfile(app.CUsersLabDocumentsButton.Text,app.NameoffiileEditField.Value);
       mkdir(outputFolder);
       writecell(personalDetails,outputExcel,'Sheet',1,'Range','A1');%export personal data
@@ -114,7 +116,7 @@ function SNRFinderHelper2(app)
        history = cell2table(history,'VariableNames',{'Words','Result','Signal,Nosie and SNR'});%change  history to table
        writetable(history,outputExcel,'Sheet',1,'Range','H1');%write history to excel
        
-       writematrix(PrintData(mdb)',outputFile,'Sheet',1,'Range','L1');
+       writematrix(PrintData(mdb)',outputExcel,'Sheet',1,'Range','L1');
 
        record  = cell2table(record,'VariableNames',{'SNR','SUCCESS'});
         

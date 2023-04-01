@@ -3,14 +3,27 @@ function [success,record,history,Idx,resultSNR]=SNRFinderPhase2Step(app,...
                                            record,history,NumOfWords,...
                                            Idx,playOrder,wordsDir,bottom,up)
                                        
-    response = zeros([1 NumOfWordsOrder(Idx.NumOfWords)]);
+    response = zeros([1 NumOfWords]);
      success = -1;
      SNRLevel = signalLevel - noiseLevel;
      resultSNR = -1;
      stats = "[Signal: " + signalLevel+ " dB , Noise: " + noiseLevel+ " dB, SNR: "+SNRLevel+" ]"; 
-    ii=1;
+    
+    if(up-down < 2)
+        success = 1;
+        record(end+1,:)={SNRLevel,0.5};
+        record = sortrows(record,1,'descend');
+        resultSNR = SNRLevel;
+        uialert(app.UIFigure,stats+newline+"Resolution is less then 2dB, average will be taken."+...
+            newline+ "Final SNR is: " + resultSNR,"FINAL RESULT");
+        
+        return;
+        
+    end
+     
+   ii=1;
    while ii<=NumOfWords
-      msg = SNRFinderPlayWord(app,wordsDir,stats,Idx,ii,NumOfWords,playOrder);
+      msg = SNRFinderPlayWord(app,signalLevel,noiseLevel,   wordsDir,stats,Idx,ii,NumOfWords,playOrder);
       
       msg = msg +newline+ 'The word was repeated this correctly?';
         selection = uiconfirm(app.UIFigure,msg,'Confirm response'...
@@ -28,12 +41,12 @@ function [success,record,history,Idx,resultSNR]=SNRFinderPhase2Step(app,...
       end
         ii = ii+1;
         Idx.currentPlay = Idx.currentPlay + 1;
-        history(end+1,:)={name,selection,stats}; 
+        history(end+1,:)={wordsDir(playOrder(Idx.currentPlay)).name,selection,stats}; 
         
        
       end
    
-      relativeSuccess = sum(recordedResponse)/NumOfWords;
+      relativeSuccess = sum(response)/NumOfWords;
       if( relativeSuccess > 0.5 )
                newSNRLevel = mean([SNRLevel bottom]);
                newNoiseLevel = signalLevel - newSNRLevel;
