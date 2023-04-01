@@ -4,12 +4,12 @@ function [success,record,history,result] = SptialHearingTestQuiteStep(app,signal
     ii=1;
     load mdb;
     mdb.TX1.stimulus.PT.amp = signalLevel;
-    mdb.TX1.stimulus.burstDuration = 3;  
     response = zeros([1 length(speakers)]);
+    result = -1;
     
 %playing speakers and record responses    
     while(ii <= length(speakers))
-      currSpeaker = playOrder(ii);
+      currSpeaker = speakers(playOrder(ii));
       stats = "[Signal: " + signalLevel +" dB]";
       msg = stats + newline+ "Current Speaker: "+ currSpeaker;
       d = uiprogressdlg(app.UIFigure,'Title','Playing',...
@@ -92,7 +92,7 @@ function [success,record,history,result] = SptialHearingTestQuiteStep(app,signal
     switch selection 
         case 'Confirm'
             
-            record(end+1,:) = {signalLevel,length(successSpeakers)};
+            record(end+1,:) = {signalLevel,length(successSpeakers),regexprep(num2str(successSpeakers),'\s+',',')};
             if(length(record(:,1))~=1)
                 record = sortrows(record,1,'descend');
             end
@@ -104,7 +104,7 @@ function [success,record,history,result] = SptialHearingTestQuiteStep(app,signal
         case 'Repeat last round'
             [success,record,history,result] = SptialHearingTestQuiteStep(app,signalLevel,speakers,record,history,duration);
         case 'Finish the test'
-                record(end+1,:) = {signalLevel,successSpeakers};
+                record(end+1,:) = {signalLevel,length(successSpeakers),regexprep(num2str(successSpeakers),'\s+',',')};
                 record = sortrows(record,1,'descend');
                 success=1;
                 return;
