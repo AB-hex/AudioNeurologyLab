@@ -44,7 +44,7 @@ function  [success,record,history,result] = SpatialHearingTestNoiseStep(app,sign
      switch length(successSpeakers)
         case 0
             title = "Increasing the SNR";
-            msg = "No response on each speaker, reducing the noise level."
+            msg = "No response from each speaker, reducing the noise level."
             newSNR = mean([SNRLevel record{find([record{:,2}]~=0,1,'last'),1}]);
             newLevel = signalLevel - newSNR; 
             msg =msg +newline+"New SNR will be "+ newSNR+ " (Noise: "+newLevel + " dB)."; 
