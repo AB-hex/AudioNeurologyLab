@@ -37,6 +37,7 @@ function [success,record,history,Idx,resultSNR,up,bottom] = SNRFinderPhase1Step(
            case 0 
                success=1;
                bottom = SNRLevel;
+               up = record{find([record{:,2}]==1,1,'last'),1}
                newSNRLevel = mean([SNRLevel record{find([record{:,2}]~=0,1,'last'),1}]);
                newNoiseLevel = signalLevel - newSNRLevel;
                title = "Increasing the SNR";
@@ -44,7 +45,7 @@ function [success,record,history,Idx,resultSNR,up,bottom] = SNRFinderPhase1Step(
                    
                 
            otherwise
-               up = SNRLevel; %TODO: check with yossi if I need to add a case to check if success is 1 and then put the up bouandry on 100% success point or 50% success point
+%                up = SNRLevel; %TODO: check with yossi if I need to add a case to check if success is 1 and then put the up bouandry on 100% success point or 50% success point
                newNoiseLevel = noiseLevel + jump;
                newSNRLevel = signalLevel - newNoiseLevel;
                 title = "Decreasing the SNR";
