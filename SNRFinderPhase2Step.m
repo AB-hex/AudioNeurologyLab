@@ -9,12 +9,12 @@ function [success,record,history,Idx,resultSNR]=SNRFinderPhase2Step(app,...
      resultSNR = -1;
      stats = "[Signal: " + signalLevel+ " dB , Noise: " + noiseLevel+ " dB, SNR: "+SNRLevel+" ]"; 
     
-    if(up-down < 2)
+    if(up-bottom < 2)
         success = 1;
         record(end+1,:)={SNRLevel,0.5};
         record = sortrows(record,1,'descend');
         resultSNR = SNRLevel;
-        uialert(app.UIFigure,stats+newline+"Resolution is less then 2dB, average will be taken."+...
+        uiconfirm(app.UIFigure,stats+newline+"Resolution is less then 2dB, average will be taken."+...
             newline+ "Final SNR is: " + resultSNR,"FINAL RESULT");
         
         return;
@@ -63,7 +63,7 @@ function [success,record,history,Idx,resultSNR]=SNRFinderPhase2Step(app,...
                newBottom = SNRLevel;
                newUp = up;
                title = "Increasing the SNR";
-               msg = "More the 50% of the words responded correctly, lowering the SNR (increasing the noise)."+newline+...
+               msg = "Less the 50% of the words responded correctly, increasing the SNR (lowering the noise)."+newline+...
                              "new SNR level: "+newSNRLevel+" (noise level: "+newNoiseLevel +" dB).";
                 
                Options = {'Confirm','Repeat last round','Cancel'};

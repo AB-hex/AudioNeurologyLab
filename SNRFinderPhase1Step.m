@@ -58,9 +58,11 @@ function [success,record,history,Idx,resultSNR,up,bottom] = SNRFinderPhase1Step(
           selection = uiconfirm(app.UIFigure,stats+newline+msg,title,'Options', Options);
         switch selection
             case 'Confirm'
-                record(end+1,:)={SNRLevel,relativeSuccess};
-                if(length(record(:,1))~=1)
-                    record = sortrows(record,1,'descend');
+                if(0.5~=relativeSuccess)
+                    record(end+1,:)={SNRLevel,relativeSuccess};
+                    if(length(record(:,1))~=1)
+                        record = sortrows(record,1,'descend');
+                    end
                 end
                 if(1 == success)
                     resultSNR = newSNRLevel;
