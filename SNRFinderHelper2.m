@@ -13,7 +13,7 @@ function SNRFinderHelper2(app)
     end
     
     
-    if(isempty(app.NameoffiileEditField.Value))
+    if(isempty(app.NameoffolderEditField.Value))
         uialert(app.UIFigure,'No output folder name','Error');
         return;
     end
@@ -108,8 +108,8 @@ function SNRFinderHelper2(app)
             return;     
        end               
     
-      outputExcel =  fullfile(app.CUsersLabDocumentsButton.Text,app.NameoffiileEditField.Value,[app.NameoffiileEditField.Value '.xlsx']);
-      outputFolder = fullfile(app.CUsersLabDocumentsButton.Text,app.NameoffiileEditField.Value);
+      outputExcel =  fullfile(app.CUsersLabDocumentsButton.Text,app.NameoffolderEditField.Value,[app.NameoffolderEditField.Value '.xlsx']);
+      outputFolder = fullfile(app.CUsersLabDocumentsButton.Text,app.NameoffolderEditField.Value);
       mkdir(outputFolder);
       writecell(personalDetails,outputExcel,'Sheet',1,'Range','A1');%export personal data
       

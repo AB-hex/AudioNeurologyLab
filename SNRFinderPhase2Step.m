@@ -9,12 +9,12 @@ function [success,record,history,Idx,resultSNR]=SNRFinderPhase2Step(app,...
      resultSNR = -1;
      stats = "[Signal: " + signalLevel+ " dB , Noise: " + noiseLevel+ " dB, SNR: "+SNRLevel+" ]"; 
     
-    if(up-bottom < 2)
+    if(abs(up-bottom) < 2)
         success = 1;
         record(end+1,:)={SNRLevel,0.5};
         record = sortrows(record,1,'descend');
         resultSNR = SNRLevel;
-        uiconfirm(app.UIFigure,stats+newline+"Resolution is less then 2dB, average will be taken."+...
+        selection = uiconfirm(app.UIFigure,stats+newline+"Resolution is less then 2dB, average will be taken."+...
             newline+ "Final SNR is: " + resultSNR,"FINAL RESULT");
         
         return;

@@ -16,7 +16,7 @@ function SNRFinderHelper(app)
     end
     
     
-    if(isempty(app.NameoffiileEditField.Value))
+    if(isempty(app.NameoffolderEditField.Value))
         uialert(app.UIFigure,'No output folder name','Error');
         return;
     end
@@ -227,7 +227,7 @@ function SNRFinderHelper(app)
                        'Test', app.TestNameEditField.Value };
     history = cell2table(history,'VariableNames',{'Words','Result','Signal and Nosie','SNR'});               
     
-    outputFile = fullfile(app.CUsersLabDocumentsButton.Text,[app.NameoffiileEditField.Value '.xlsx']);
+    outputFile = fullfile(app.CUsersLabDocumentsButton.Text,[app.NameoffolderEditField.Value '.xlsx']);
     writecell(personalDetails,outputFile,'Sheet',1,'Range','A1');
     writetable(history,outputFile,'Sheet',1,'Range','H1');
     writematrix(PrintData(mdb)',outputFile,'Sheet',1,'Range','L1');
