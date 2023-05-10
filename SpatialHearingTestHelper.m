@@ -16,7 +16,7 @@ function SpatialHearingTestHelper(app)
     end
     load mdb
     [mdb.master.TX1_select , mdb.TX1.stimulus.stimulusSelect.pureTone]=deal(1,1);
-    mdb.TX1.stimulus.PT.freq = app.SignalFrequencyHzDropDown.Value;
+    mdb.TX1.stimulus.PT.freq = str2double(app.SignalFrequencyHzDropDown.Value);
     mdb.TX1.stimulus.PT.amp = app.SpatialSignaldbEditField.Value;
     mdb.TX1.stimulus.burstDuration = app.DurationsecEditField.Value;
     history = {};
@@ -37,15 +37,13 @@ function SpatialHearingTestHelper(app)
                                                       OutputSelection,...
                                                       record,history,app.DurationsecEditField.Value);
     elseif(app.NoiseIncreasingNoiseButton.Value)
-%         [success,record,history,result] = SpatialHearingTestNoiseStep(app,...
-%                                                       app.SpatialSignaldbEditField.Value,...
-%                                                       app.SpatialNoisedbEditField.Value,...
-%                                                       OutputSelection,...
-%                                                       record,history,app.DurationsecEditField.Value);
+        [success,record,history,result] = SpatialHearingTestNoiseStep(app,...
+                                                      app.SpatialSignaldbEditField.Value,...
+                                                      app.SpatialNoisedbEditField.Value,...
+                                                      OutputSelection,...
+                                                      record,history,app.DurationsecEditField.Value);
         
-            app1=app;
-            load("C:\Users\Lab\Desktop\SpatialHearingResult.mat");
-            app=app1;
+
     end
                                                   
      if(-1 == success)
