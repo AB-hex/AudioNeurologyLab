@@ -67,9 +67,9 @@ function SpatialHearingTestHelper(app)
     yy = interp1(x, y, xx, 'pchip');
     f=figure;
     plot(xx,yy);
-    title(titlePlot);
+    title(titlePlot+" - Final Direction Result: "+result);
     xlabel(xlabelText);
-    ylabel('# of succesfully located speakers');
+    ylabel("# of succesfully located speakers");
     
     ax = gca;
     ax.XDir='reverse';
@@ -78,21 +78,21 @@ function SpatialHearingTestHelper(app)
     plot(x,y,'x');
     hold off
     
-    title1 = "Export";
-    txt = "Do you want export the result to excel?";
-    selection = uiconfirm(app.UIFigure,txt,title1,...
-                           'Options',{'Export','Cancel'});
-                       
+%     title1 = "Export";
+%     txt = "Do you want export the result to excel?";
+%     selection = uiconfirm(app.UIFigure,txt,title1,...
+%                            'Options',{'Export','Cancel'});
+%                        
     personalDetails = {'Name' , app.NameEditField_2.Value;...
                        'Age' , app.AgeEditField_2.Value;...
                        'Gender',app.GenderEditField_2.Value;...
                        'Ear', app.EarEditField_2.Value;...
                        'Test', app.TestNameEditField_2.Value };
                        
-    switch selection
-        case 'Cancel'
-            return;     
-    end
+%     switch selection
+%         case 'Cancel'
+%             return;     
+%     end
     
     
     outputExcel = fullfile(app.CUsersLabDocumentsButton_2.Text,app.NameoffiileEditField_2.Value,string(personalDetails{1,2})+app.NameoffiileEditField_2.Value+".xlsx");

@@ -81,7 +81,7 @@ function SNRFinderHelper2(app)
     yy = interp1(x, y, xx, 'pchip');
     f=figure;
     plot(xx,yy);
-    title("SNR Result Test");
+    title("SNR Result Test - Final SNR at 50%: "+resultSNR);
     xlabel("SNR");
     ylabel('# of succesfully words');
     
@@ -90,23 +90,25 @@ function SNRFinderHelper2(app)
     
    hold on
     plot(x,y,'x');
+    plot(resultSNR,0.5,'og');
+    text(resultSNR,0.5,"["+resultSNR+" 0.5]");
     hold off
     
     title1 = "Export";
-    txt = "Do you want export the result to excel?";
-    selection = uiconfirm(app.UIFigure,txt,title1,...
-                           'Options',{'Export','Cancel'});
-    
+%     txt = "Do you want export the result to excel?";
+%     selection = uiconfirm(app.UIFigure,txt,title1,...
+%                            'Options',{'Export','Cancel'});
+%     
     
      personalDetails = {'Name' , app.NameEditField.Value;...
                        'Age' , app.AgeEditField.Value;...
                        'Gender',app.GenderEditField.Value;...
                        'Ear', app.EarEditField.Value;...
                        'Test', app.TestNameEditField.Value };
-       switch selection
-        case 'Cancel'
-            return;     
-       end               
+%        switch selection
+%         case 'Cancel'
+%             return;     
+%        end               
     
       outputExcel =  fullfile(app.CUsersLabDocumentsButton.Text,app.NameoffolderEditField.Value,[app.NameoffolderEditField.Value '.xlsx']);
       outputFolder = fullfile(app.CUsersLabDocumentsButton.Text,app.NameoffolderEditField.Value);
