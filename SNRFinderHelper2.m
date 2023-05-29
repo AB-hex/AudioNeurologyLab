@@ -1,4 +1,6 @@
 function SNRFinderHelper2(app) 
+
+%TODO Test the custom noise 
     d = uiprogressdlg(app.UIFigure,'Title','Please Wait',...
     'Message','Starting ','Indeterminate','on');
     pause(2);
@@ -35,7 +37,14 @@ function SNRFinderHelper2(app)
     mdb.TX2.transducer.FF.DacVector(1:8) = NoiseSelection;
     
     [mdb.master.TX1_select,mdb.master.TX2_select ] = deal(1,1);
-    [mdb.TX1.stimulus.stimulusSelect.speech, mdb.TX2.stimulus.stimulusSelect.noise ] = deal(1,1);
+    mdb.TX1.stimulus.stimulusSelect.speech = 1;
+    if(app.noiseFromFileFlag)
+      mdb.TX2.stimulus.stimulusSelect.speech =1;
+      PrepareNoiseSegments(app.ChoosenoiseaudiofileButton.Text);
+    else
+      mdb.TX2.stimulus.stimulusSelect.noise =1 ;
+    end
+%     [mdb.TX1.stimulus.stimulusSelect.speech, mdb.TX2.stimulus.stimulusSelect.noise ] = deal(1,1);
   save mdb mdb;
      playOrder = randperm(length(wordsDir));
 %     jumpOrder = [10,5,3,2];
@@ -61,10 +70,8 @@ function SNRFinderHelper2(app)
     end
     Idx.NumOfWords = Idx.NumOfWords + 1;
     
-% app1 = app;
-% load("C:\Users\Lab\Desktop\matlab_phase1.mat")
-% app = app1;
-[success,record,history,Idx,resultSNR] = SNRFinderPhase2Step(app,...
+
+[   success,record,history,Idx,resultSNR] = SNRFinderPhase2Step(app,...
                                            signalLevel,signalLevel-resultSNR,...
                                            record,history,NumOfWordsOrder(Idx.NumOfWords),...
                                            Idx,playOrder,wordsDir,bottom,up);
@@ -81,17 +88,18 @@ function SNRFinderHelper2(app)
     yy = interp1(x, y, xx, 'pchip');
     f=figure;
     plot(xx,yy);
-    title("SNR Result Test - Final SNR at 50%: "+resultSNR);
+    title("SNR Result Test - Final SNR at 50%: "+resultSNR+" [dB]");
     xlabel("SNR");
     ylabel('# of succesfully words');
-    
+    grid on;
     ax = gca;
     ax.XDir='reverse';
-    
+    ax.GridColor = [0.3 0.3 0.3];
    hold on
+
+    plot(resultSNR,0.5,'or');
+%     text(resultSNR,0.5,"["+resultSNR+" 0.5]");
     plot(x,y,'x');
-    plot(resultSNR,0.5,'og');
-    text(resultSNR,0.5,"["+resultSNR+" 0.5]");
     hold off
     
     title1 = "Export";

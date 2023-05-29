@@ -1,5 +1,6 @@
-function SpatialHearingTestHelper(app)
-    %TODO add export excel 
+function SpatialHearingTestHelper(app) 
+
+%TODO Add support for words and custom noise
     d = uiprogressdlg(app.UIFigure,'Title','Please Wait',...
     'Message','Starting ','Indeterminate','on');
     pause(2);
@@ -21,7 +22,7 @@ function SpatialHearingTestHelper(app)
     mdb.TX1.stimulus.burstDuration = app.DurationsecEditField.Value;
     history = {};
     if(app.NoiseIncreasingNoiseButton.Value)
-        mdb.TX1.stimulus.stimulusSelect.Noise = 1;
+        mdb.TX1.stimulus.stimulusSelect.noise = 1;
         mdb.TX1.stimulus.noise.amp = app.SpatialNoisedbEditField.Value;    
     end
     record = {};

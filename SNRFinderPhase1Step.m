@@ -8,7 +8,7 @@ function [success,record,history,Idx,resultSNR,up,bottom] = SNRFinderPhase1Step(
      resultSNR = -1;
      
       stats = "[Signal: " + signalLevel+ " dB , Noise: " + noiseLevel+ " dB, SNR: "+SNRLevel+" ]"; 
-     ii=1
+       ii=1;
        while ii<=NumOfWords
             msg = SNRFinderPlayWord(app,signalLevel,noiseLevel,wordsDir,stats,Idx,ii,NumOfWords,playOrder);
             
@@ -37,7 +37,7 @@ function [success,record,history,Idx,resultSNR,up,bottom] = SNRFinderPhase1Step(
            case 0 
                success=1;
                bottom = SNRLevel;
-               up = record{find([record{:,2}]==1,1,'last'),1}
+               up = record{find([record{:,2}]==1,1,'last'),1}; %TODO FIX Index in position 2 exceeds array bounds.
                newSNRLevel = mean([SNRLevel record{find([record{:,2}]~=0,1,'last'),1}]);
                newNoiseLevel = signalLevel - newSNRLevel;
                title = "Increasing the SNR";
