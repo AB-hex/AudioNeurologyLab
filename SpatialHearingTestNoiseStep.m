@@ -3,6 +3,7 @@ function  [success,record,history,result] = SpatialHearingTestNoiseStep(app,sign
         ii=1;
         load mdb;
         mdb.TX1.stimulus.noise.amp = noiseLevel; 
+        
         response = zeros([1 length(speakers)]);
         result = -1;        
         SNRLevel = signalLevel - noiseLevel;
