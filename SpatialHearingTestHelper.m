@@ -1,6 +1,7 @@
 function SpatialHearingTestHelper(app) 
 
-%TODO Add support for words and custom noise
+%TODO Add support for words and custom noise, and options for choosing
+%where noise will come from direction
     d = uiprogressdlg(app.UIFigure,'Title','Please Wait',...
     'Message','Starting ','Indeterminate','on');
     pause(2);
@@ -22,8 +23,13 @@ function SpatialHearingTestHelper(app)
     mdb.TX1.stimulus.burstDuration = app.DurationsecEditField.Value;
     history = {};
     if(app.NoiseIncreasingNoiseButton.Value)
-        mdb.TX1.stimulus.stimulusSelect.noise = 1;
-        mdb.TX1.stimulus.noise.amp = app.SpatialNoisedbEditField.Value;    
+        if(~app.noiseFromFileFlag)
+            mdb.TX1.stimulus.stimulusSelect.noise = 1;
+            mdb.TX1.stimulus.noise.amp = app.SpatialNoisedbEditField.Value;
+        else
+            mdb.TX1.stimulus.stimulusSelect.speech = 1;
+            mdb.TX1.stimulus.speech.amp = app.SpatialNoisedbEditField.Value;
+        end
     end
     record = {};
     result = -1;
@@ -38,6 +44,13 @@ function SpatialHearingTestHelper(app)
                                                       OutputSelection,...
                                                       record,history,app.DurationsecEditField.Value);
     elseif(app.NoiseIncreasingNoiseButton.Value)
+        if(app.noiseFromFileFlag)
+            if(strcmp(app.ChoosenoiseaudiofileButtonSpatialHearing.Text,"Choose noise audio file"))
+                uialert(app.UIFigure,"No noise file selected, Please choose noise file","Choose a noise file");
+                return;
+            end
+            PrepareNoiseSegments(app.ChoosenoiseaudiofileButtonSpatialHearing.Text,app.DurationsecEditField.Text);
+        end
         [success,record,history,result] = SpatialHearingTestNoiseStep(app,...
                                                       app.SpatialSignaldbEditField.Value,...
                                                       app.SpatialNoisedbEditField.Value,...
