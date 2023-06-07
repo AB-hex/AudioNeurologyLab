@@ -40,7 +40,7 @@ function SNRFinderHelper2(app)
     mdb.TX1.stimulus.stimulusSelect.speech = 1;
     if(app.noiseFromFileFlag)
       mdb.TX2.stimulus.stimulusSelect.speech =1;
-      PrepareNoiseSegments(app.ChoosenoiseaudiofileButton.Text);
+      PrepareNoiseSegments(app.ChoosenoiseaudiofileButton.Text,4);
     else
       mdb.TX2.stimulus.stimulusSelect.noise =1 ;
     end
