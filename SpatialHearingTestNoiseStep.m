@@ -1,19 +1,48 @@
-function  [success,record,history,result] = SpatialHearingTestNoiseStep(app,signalLevel,noiseLevel,speakers,record,history,duration)
+function  [success,record,history,result] = SpatialHearingTestNoiseStep(app,signalLevel,noiseLevel,speakers,noiseDetails,record,history,duration)
         playOrder = randperm(length(speakers));    
         ii=1;
         load mdb;
-        mdb.TX1.stimulus.noise.amp = noiseLevel; 
-        
+        mdb.(noiseDetails.TXModeNoise).stimulus.(noiseDetails.typeNoise).amp = noiseLevel; 
         response = zeros([1 length(speakers)]);
         result = -1;        
         SNRLevel = signalLevel - noiseLevel;
+
   while(ii <= length(speakers))
       currSpeaker = speakers(playOrder(ii));
       stats = "[Signal: " + signalLevel +" dB, Noise: "+noiseLevel+" dB, SNR: "+ SNRLevel+"]";
-      msg = stats + newline+ "Current Speaker: "+ currSpeaker;
-      d = uiprogressdlg(app.UIFigure,'Title','Playing',...
-                'Message',msg,'Value',ii/length(speakers));
+      msg = stats + newline+ "Current Signal Speaker: "+ currSpeaker ;
+      if(strcmp(noiseDetails.TXModeNoise,"TX2"))
+          noiseOutput = 1:8;
+          noiseOutput = noiseOutput(mdb.TX2.transducer.FF.DacVector);
+          if(length(noiseOutput)>1)
+            noiseOutput = regexprep(num2str(noiseOutput),'\s+',',');
+          end
+        
+      else
+        noiseOutput = currSpeaker;
+      end
+      msg = msg + " Noise Speakers: "+ noiseOutput;
+%       d = uiprogressdlg(app.UIFigure,'Title','Playing',...
+%                 'Message',msg,'Value',ii/length(speakers));
       mdb.TX1.transducer.FF.DacVector(currSpeaker) = 1;
+      if(app.noiseFromFileFlag)
+          noise_list = dir('Noise\*.wav');
+          randomNoiseChoice = noise_list(randi(length(noise_list)));
+          mdb.(noiseDetails.TXModeNoise).stimulus.speech.source  = fullfile(randomNoiseChoice.folder,randomNoiseChoice.name); 
+      end
+      if(app.WordsFolderButton.Value)
+        wordsDir = dir(app.ChoosesignalwordsfolderButtonSpatialHearing.Text+"\*.wav"); 
+        currWordIdx = randi(length(wordsDir));
+        filename = fullfile(wordsDir(currWordIdx).folder,wordsDir(currWordIdx).name);
+        
+        [y,fs] =audioread(filename);
+        duration = length(y)/fs;
+        mdb.TX1.stimulus.speech.source = filename;
+        mdb.TX1.stimulus.burstDuration = duration;
+        msg = msg + newline + wordsDir(currWordIdx).name;
+      end
+        d = uiprogressdlg(app.UIFigure,'Title','Playing',...
+            'Message',msg,'Value',ii/length(speakers));
       save mdb mdb;
      [~,~,~] = play_signal_multi(mdb.master.TX1_select,mdb.master.TX2_select,mdb.master.TX3_select); 
       pause(duration + 0.175 );  
@@ -37,7 +66,12 @@ function  [success,record,history,result] = SpatialHearingTestNoiseStep(app,sign
       end
       
      ii=ii+1;
-     history(end+1,:)= {currSpeaker, selection,stats};
+     historyLine = {currSpeaker, selection,stats};
+     if(app.WordsFolderButton.Value)
+        historyLine(end+1) = {wordsDir(currWordIdx).name};
+     end
+     historyLine(end+1) = {noiseOutput};
+     history(end+1,:)= historyLine;
   end
   
     successSpeakers = sort(speakers(playOrder(response==1)));  
@@ -96,12 +130,12 @@ function  [success,record,history,result] = SpatialHearingTestNoiseStep(app,sign
                 record = sortrows(record,1,'descend');
             end
             if(0==length(successSpeakers))
-            [success,record,history,result] = SpatialHearingTestNoiseStep(app,signalLevel,newLevel,speakers,record,history,duration);
+            [success,record,history,result] = SpatialHearingTestNoiseStep(app,signalLevel,newLevel,speakers,noiseDetails,record,history,duration);
             else
-              [success,record,history,result] = SpatialHearingTestNoiseStep(app,signalLevel,newLevel,successSpeakers,record,history,duration);
+              [success,record,history,result] = SpatialHearingTestNoiseStep(app,signalLevel,newLevel,successSpeakers,noiseDetails,record,history,duration);
             end
         case 'Repeat last round'
-            [success,record,history,result] = SpatialHearingTestNoiseStep(app,signalLevel,noiseLevel,speakers,record,history,duration);
+            [success,record,history,result] = SpatialHearingTestNoiseStep(app,signalLevel,noiseLevel,speakers,noiseDetails,record,history,duration);
         case 'Finish the test'
                 record(end+1,:) = {SNRLevel,length(successSpeakers),regexprep(num2str(successSpeakers),'\s+',',')};
                 record = sortrows(record,1,'descend');

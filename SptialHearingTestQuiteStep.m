@@ -1,9 +1,10 @@
-function [success,record,history,result] = SptialHearingTestQuiteStep(app,signalLevel,speakers,record,history,duration)
+function [success,record,history,result] = SptialHearingTestQuiteStep(app,signalType,signalLevel,speakers,record,history,duration)
 
     playOrder = randperm(length(speakers));
     ii=1;
     load mdb;
-    mdb.TX1.stimulus.PT.amp = signalLevel;
+    mdb.TX1.stimulus.(signalType).amp = signalLevel;
+    
     response = zeros([1 length(speakers)]);
     result = -1;
     
@@ -12,9 +13,25 @@ function [success,record,history,result] = SptialHearingTestQuiteStep(app,signal
       currSpeaker = speakers(playOrder(ii));
       stats = "[Signal: " + signalLevel +" dB]";
       msg = stats + newline+ "Current Speaker: "+ currSpeaker;
-      d = uiprogressdlg(app.UIFigure,'Title','Playing',...
-                'Message',msg,'Value',ii/length(speakers));
+    
       mdb.TX1.transducer.FF.DacVector(currSpeaker) = 1;
+      
+      if(app.WordsFolderButton.Value)
+        
+        wordsDir = dir(app.ChoosesignalwordsfolderButtonSpatialHearing.Text+"\*.wav"); 
+        currWordIdx = randi(length(wordsDir));
+        filename = fullfile(wordsDir(currWordIdx).folder,wordsDir(currWordIdx).name);
+        
+        [y,fs] =audioread(filename);
+        duration = length(y)/fs;
+        mdb.TX1.stimulus.speech.source = filename;
+        mdb.TX1.stimulus.burstDuration = duration;
+        
+        msg = msg + newline +  wordsDir(currWordIdx).name;
+      end
+      
+        d = uiprogressdlg(app.UIFigure,'Title','Playing',...
+                'Message',msg,'Value',ii/length(speakers));
       save mdb mdb;
      [~,~,~] = play_signal_multi(mdb.master.TX1_select,mdb.master.TX2_select,mdb.master.TX3_select); 
       pause(duration + 0.175 );  
@@ -37,7 +54,12 @@ function [success,record,history,result] = SptialHearingTestQuiteStep(app,signal
             return;
       end
       ii = ii+1;
-      history(end+1,:)= {currSpeaker, selection,stats};
+      historyLine= {currSpeaker, selection,stats};
+      
+      if(app.WordsFolderButton.Value)
+         historyLine(end+1) = {wordsDir(currWordIdx).name};
+      end
+      history(end+1,:) = historyLine;
       
     end
       
@@ -97,12 +119,12 @@ function [success,record,history,result] = SptialHearingTestQuiteStep(app,signal
                 record = sortrows(record,1,'descend');
             end
             if(0==length(successSpeakers))
-            [success,record,history,result] = SptialHearingTestQuiteStep(app,newLevel,speakers,record,history,duration);
+            [success,record,history,result] = SptialHearingTestQuiteStep(app,signalType,newLevel,speakers,record,history,duration);
             else
-              [success,record,history,result] = SptialHearingTestQuiteStep(app,newLevel,successSpeakers,record,history,duration);
+              [success,record,history,result] = SptialHearingTestQuiteStep(app,signalType,newLevel,successSpeakers,record,history,duration);
             end
         case 'Repeat last round'
-            [success,record,history,result] = SptialHearingTestQuiteStep(app,signalLevel,speakers,record,history,duration);
+            [success,record,history,result] = SptialHearingTestQuiteStep(app,signalType,signalLevel,speakers,record,history,duration);
         case 'Finish the test'
                 record(end+1,:) = {signalLevel,length(successSpeakers),regexprep(num2str(successSpeakers),'\s+',',')};
                 record = sortrows(record,1,'descend');
