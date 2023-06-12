@@ -184,8 +184,9 @@ function HandleExpriement(script,Button)
                     if(isempty(idxTX))
                         ErrorMessage(ii,'no file signal chosen but duration is file','No file signal');
                     end
-                    [y,Fs] = audioread(mdb.(strcat('TX',num2str(idxTX))).stimulus.speech.source);
-                    durationInSec = length(y)/Fs;
+%                     [y,Fs] = audioread(mdb.(strcat('TX',num2str(idxTX))).stimulus.speech.source);
+%                     durationInSec = length(y)/Fs;
+                    durationInSec = audioinfo(mdb.(strcat('TX',num2str(idxTX))).stimulus.speech.source).Duration;
                   end
 
                   mdb.TX1.stimulus.burstDuration =  durationInSec;% durationInSec;

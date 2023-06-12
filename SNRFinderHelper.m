@@ -72,9 +72,10 @@ function SNRFinderHelper(app)
             d = uiprogressdlg(app.UIFigure,'Title','Playing',...
                     'Message',msg,'Value',ii/NumOfWords);
 
-            [y,fs] =audioread(filename);
+%             [y,fs] =audioread(filename);
 %             sound(y,fs);
-            durationInSec = length(y)/fs;
+%             durationInSec = length(y)/fs;
+            durationInSec = audioinfo(filename).Duration;
             mdb.TX1.stimulus.speech.source = filename;
             mdb.TX1.stimulus.burstDuration = durationInSec;
             mdb.TX2.stimulus.burstDuration = durationInSec;

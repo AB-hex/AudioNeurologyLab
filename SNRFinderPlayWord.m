@@ -11,8 +11,9 @@ function msg = SNRFinderPlayWord(app,signalLevel,noiseLevel,wordsDir,stats,Idx,i
             msg = stats+newline+ "Playing "+ii+" word out of "+NumOfWords+newline+name;
             d = uiprogressdlg(app.UIFigure,'Title','Playing',...
                     'Message',msg,'Value',ii/NumOfWords);
-            [y,fs] =audioread(filename);
-             durationInSec = length(y)/fs;
+%             [y,fs] =audioread(filename);
+%              durationInSec = length(y)/fs;
+            durationInSec = audioinfo(filename).Duration;
             mdb.TX1.stimulus.speech.source = filename;
             mdb.TX1.stimulus.burstDuration = durationInSec;
             mdb.TX2.stimulus.burstDuration = durationInSec;

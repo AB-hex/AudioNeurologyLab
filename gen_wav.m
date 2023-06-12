@@ -12,7 +12,10 @@ f_samp=24414.0625;
 
 
 %[sig_tmp,fs,nbits] = wavread(source_wav_file,'double');
-[sig_tmp,fs,nbits] = wavread(source_wav_file);
+% display(source_wav_file);
+% [sig_tmp,fs,nbits] = wavread(source_wav_file);
+[sig_tmp,fs] = audioread(source_wav_file);
+nbits = audioinfo(source_wav_file).BitsPerSample;
 %figure(); plot(sig_tmp); grid
 
 sig_tmp = (sig_tmp(:,1)); %choose mono in case of stereo audio file

@@ -35,8 +35,9 @@ function  [success,record,history,result] = SpatialHearingTestNoiseStep(app,sign
         currWordIdx = randi(length(wordsDir));
         filename = fullfile(wordsDir(currWordIdx).folder,wordsDir(currWordIdx).name);
         
-        [y,fs] =audioread(filename);
-        duration = length(y)/fs;
+%         [y,fs] =audioread(filename);
+%         duration = length(y)/fs;
+        duration = audioinfo(filename).Duration;
         mdb.TX1.stimulus.speech.source = filename;
         mdb.TX1.stimulus.burstDuration = duration;
         msg = msg + newline + wordsDir(currWordIdx).name;
