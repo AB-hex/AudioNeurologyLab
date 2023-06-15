@@ -20,7 +20,7 @@ function SpatialHearingTestHelper(app)
         uialert(app.UIFigure,'select at least 3 outputs','Error');
         return;
     end
-    VariableHistoryNames={'# Speaker','Result','Level'};
+    VariableHistoryNames={'# Speaker','Angle','Result','Level'};
     
     if(app.WordsFolderButton.Value)
          if(strcmp(app.ChoosesignalwordsfolderButtonSpatialHearing.Text,"Choose signal words folder"))
@@ -107,22 +107,21 @@ function SpatialHearingTestHelper(app)
     if(app.quiteNoNoisedecreasingsignalButton.Value)
         titlePlot = "Spatial hearing test result-Quite";
         xlabelText = "'Level (dB)'";
-        recordVariableNames = {'Level','# of successfully located speakers','# speakers'};
+        recordVariableNames = {'Level','# of successfully located speakers','# speakers','angle of speakers'};
     else %noise
          titlePlot = "Spatial hearing test result-Noise";
          xlabelText = "SNR";
-         recordVariableNames = {'SNR','# of successfully located speakers','# speakers'};
+         recordVariableNames = {'SNR','# of successfully located speakers','# speakers','angle of speakers'};
     end
-        
-     
     
+    result = (8-result)*45;
     x = [record{:,1}];
     y = [record{:,2}];
     xx = linspace(min(x),max(x),500);
     yy = interp1(x, y, xx, 'pchip');
     f=figure;
     plot(xx,yy);
-    title(titlePlot+" - Final Direction Result: "+result);
+    title(titlePlot+" - Final Direction Result: "+result+"°");
     xlabel(xlabelText);
     ylabel("# of succesfully located speakers");
     

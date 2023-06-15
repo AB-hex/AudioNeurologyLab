@@ -10,7 +10,8 @@ function  [success,record,history,result] = SpatialHearingTestNoiseStep(app,sign
   while(ii <= length(speakers))
       currSpeaker = speakers(playOrder(ii));
       stats = "[Signal: " + signalLevel +" dB, Noise: "+noiseLevel+" dB, SNR: "+ SNRLevel+"]";
-      msg = stats + newline+ "Current Signal Speaker: "+ currSpeaker ;
+      currAngle = (8-currSpeaker)*45 +"°";
+      msg = stats + newline+ "Current Signal Speaker: "+ currSpeaker + " with angle of " +currAngle; ;
       if(strcmp(noiseDetails.TXModeNoise,"TX2"))
           noiseOutput = 1:8;
           noiseOutput = noiseOutput(mdb.TX2.transducer.FF.DacVector);
@@ -67,7 +68,7 @@ function  [success,record,history,result] = SpatialHearingTestNoiseStep(app,sign
       end
       
      ii=ii+1;
-     historyLine = {currSpeaker, selection,stats};
+     historyLine = {currSpeaker,currAngle, selection,stats};
      if(app.WordsFolderButton.Value)
         historyLine(end+1) = {wordsDir(currWordIdx).name};
      end
@@ -92,13 +93,13 @@ function  [success,record,history,result] = SpatialHearingTestNoiseStep(app,sign
                  + " is last that left with SNR at "+SNRLevel;
             Options = {'Finish the test','Repeat last round','Cancel'};
             result = successSpeakers;
-         case 2
-         title = "FINAL RESULT";
-         msg = "2 Speakers left: " +successSpeakers(1)+", "+ successSpeakers(2)+...
-         newline+ "Final result is will be the average: " + mean(successSpeakers)+...
-          " at SNR: "+ SNRLevel;
-         Options = {'Finish the test','Repeat last round','Cancel'};
-         result = mean(successSpeakers);
+%          case 2
+%          title = "FINAL RESULT";
+%          msg = "2 Speakers left: " +successSpeakers(1)+", "+ successSpeakers(2)+...
+%          newline+ "Final result is will be the average: " + mean(successSpeakers)+...
+%           " at SNR: "+ SNRLevel;
+%          Options = {'Finish the test','Repeat last round','Cancel'};
+%          result = mean(successSpeakers);
          otherwise 
             title = "Decreasing SNR";
             msg = "Speakers: " + regexprep(num2str(successSpeakers),'\s+',',') + " was responded correctly.";
@@ -126,7 +127,8 @@ function  [success,record,history,result] = SpatialHearingTestNoiseStep(app,sign
     switch selection 
         case 'Confirm'
             
-            record(end+1,:) = {SNRLevel,length(successSpeakers),regexprep(num2str(successSpeakers),'\s+',',')};
+            record(end+1,:) = {SNRLevel,length(successSpeakers),regexprep(num2str(successSpeakers),'\s+',','),...
+                                 regexprep(regexprep(num2str(successSpeakers),'\d(?=\s|$)','$0°,'),',$','')};
             if(length(record(:,1))~=1)
                 record = sortrows(record,1,'descend');
             end
@@ -138,7 +140,8 @@ function  [success,record,history,result] = SpatialHearingTestNoiseStep(app,sign
         case 'Repeat last round'
             [success,record,history,result] = SpatialHearingTestNoiseStep(app,signalLevel,noiseLevel,speakers,noiseDetails,record,history,duration);
         case 'Finish the test'
-                record(end+1,:) = {SNRLevel,length(successSpeakers),regexprep(num2str(successSpeakers),'\s+',',')};
+                record(end+1,:) = {SNRLevel,length(successSpeakers),regexprep(num2str(successSpeakers),'\s+',','),...
+                                 regexprep(regexprep(num2str((8-successSpeakers).*45),'\d(?=\s|$)','$0°,'),',$','')}};
                 record = sortrows(record,1,'descend');
                 success=1;
                 return;

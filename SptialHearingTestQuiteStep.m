@@ -12,7 +12,8 @@ function [success,record,history,result] = SptialHearingTestQuiteStep(app,signal
     while(ii <= length(speakers))
       currSpeaker = speakers(playOrder(ii));
       stats = "[Signal: " + signalLevel +" dB]";
-      msg = stats + newline+ "Current Speaker: "+ currSpeaker;
+      currAngle = (8-currSpeaker)*45 +"°";
+      msg = stats + newline+ "Current Speaker: "+ currSpeaker + " with angle of " +currAngle;
     
       mdb.TX1.transducer.FF.DacVector(currSpeaker) = 1;
       
@@ -55,7 +56,7 @@ function [success,record,history,result] = SptialHearingTestQuiteStep(app,signal
             return;
       end
       ii = ii+1;
-      historyLine= {currSpeaker, selection,stats};
+      historyLine= {currSpeaker,currAngle, selection,stats};
       
       if(app.WordsFolderButton.Value)
          historyLine(end+1) = {wordsDir(currWordIdx).name};
@@ -79,13 +80,13 @@ function [success,record,history,result] = SptialHearingTestQuiteStep(app,signal
                  + " is last that left with signal at "+signalLevel;
             Options = {'Finish the test','Repeat last round','Cancel'};
             result = successSpeakers;
-        case 2
-             title = "FINAL RESULT";
-             msg = "2 Speakers left: " +successSpeakers(1)+", "+ successSpeakers(2)+...
-             newline+ "Final result is will be the average: " + mean(successSpeakers)+...
-              " at level: "+ signalLevel+" dB.";
-             Options = {'Finish the test','Repeat last round','Cancel'};
-             result = mean(successSpeakers);
+%         case 2
+%              title = "FINAL RESULT";
+%              msg = "2 Speakers left: " +successSpeakers(1)+", "+ successSpeakers(2)+...
+%              newline+ "Final result is will be the average: " + mean(successSpeakers)+...
+%               " at level: "+ signalLevel+" dB.";
+%              Options = {'Finish the test','Repeat last round','Cancel'};
+%              result = mean(successSpeakers);
         otherwise 
             title = "Decreasing the level";
             msg = "Speakers: " + regexprep(num2str(successSpeakers),'\s+',',') + " was responded correctly.";
@@ -115,7 +116,8 @@ function [success,record,history,result] = SptialHearingTestQuiteStep(app,signal
     switch selection 
         case 'Confirm'
             
-            record(end+1,:) = {signalLevel,length(successSpeakers),regexprep(num2str(successSpeakers),'\s+',',')};
+            record(end+1,:) = {signalLevel,length(successSpeakers),regexprep(num2str(successSpeakers),'\s+',','),...
+                regexprep(regexprep(num2str((8-successSpeakers).*45),'\d(?=\s|$)','$0°,'),',$','')};
             if(length(record(:,1))~=1)
                 record = sortrows(record,1,'descend');
             end
@@ -127,7 +129,8 @@ function [success,record,history,result] = SptialHearingTestQuiteStep(app,signal
         case 'Repeat last round'
             [success,record,history,result] = SptialHearingTestQuiteStep(app,signalType,signalLevel,speakers,record,history,duration);
         case 'Finish the test'
-                record(end+1,:) = {signalLevel,length(successSpeakers),regexprep(num2str(successSpeakers),'\s+',',')};
+                record(end+1,:) = {signalLevel,length(successSpeakers),regexprep(num2str(successSpeakers),'\s+',','),...
+                    regexprep(regexprep(num2str((8-successSpeakers).*45),'\d(?=\s|$)','$0°,'),',$','')};
                 record = sortrows(record,1,'descend');
                 success=1;
                 return;
