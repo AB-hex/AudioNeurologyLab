@@ -49,9 +49,9 @@ function SpatialHearingTestHelper(app)
         else
             typeNoise = "speech";
         end
-        
+        TXModeNoise = "TX2";%Seperated Channels for noise
         if(app.FixedSpeakersnoiseoutputButton.Value)
-           TXModeNoise = "TX2";%Seperated Channels for noise
+
            OutputNoiseSelection = arrayfun(@(ii) app.("SpatialSignalOutput"+ii+"Noise").Value,[1:8]);
            if(sum(OutputNoiseSelection) == 0)
                 uialert(app.UIFigure,'Please choose fixed noise speakers','No Speakers For Noise');
@@ -59,9 +59,10 @@ function SpatialHearingTestHelper(app)
            end 
             mdb.TX2.transducer.FF.DacVector(1:8) = OutputNoiseSelection;
             mdb.master.TX2_select = 1;
-        else
-            TXModeNoise = "TX1"; %Same Channel with signal
         end
+%         else
+%             TXModeNoise = "TX1"; %Same Channel with signal
+%         end
         
         mdb.(TXModeNoise).stimulus.stimulusSelect.(typeNoise) = 1;
         mdb.(TXModeNoise).stimulus.(typeNoise).amp = app.SpatialNoisedbEditField.Value;

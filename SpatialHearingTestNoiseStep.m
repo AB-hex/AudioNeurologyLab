@@ -12,7 +12,8 @@ function  [success,record,history,result] = SpatialHearingTestNoiseStep(app,sign
       stats = "[Signal: " + signalLevel +" dB, Noise: "+noiseLevel+" dB, SNR: "+ SNRLevel+"]";
       currAngle = (8-currSpeaker)*45 +"°";
       msg = stats + newline+ "Current Signal Speaker: "+ currSpeaker + " with angle of " +currAngle; ;
-      if(strcmp(noiseDetails.TXModeNoise,"TX2"))
+%       if(strcmp(noiseDetails.TXModeNoise,"TX2"))
+      if(app.FixedSpeakersnoiseoutputButton.Value)
           noiseOutput = 1:8;
           noiseOutput = noiseOutput(mdb.TX2.transducer.FF.DacVector);
           if(length(noiseOutput)>1)
@@ -20,6 +21,7 @@ function  [success,record,history,result] = SpatialHearingTestNoiseStep(app,sign
           end
         
       else
+        mdb.TX2.transducer.FF.DacVector(currSpeaker) = 1;%Noise TX2 selection need to be same as TX1
         noiseOutput = currSpeaker;
       end
       msg = msg + " Noise Speakers: "+ noiseOutput;
@@ -50,6 +52,9 @@ function  [success,record,history,result] = SpatialHearingTestNoiseStep(app,sign
       pause(duration + 0.175 );  
       TXall_stop_signal();
       mdb.TX1.transducer.FF.DacVector(currSpeaker) = 0;
+      if(~app.FixedSpeakersnoiseoutputButton.Value)
+        mdb.TX2.transducer.FF.DacVector(currSpeaker) = 0;
+      end
       close(d);
       
       msg = msg +newline+ 'The speaker was located correctly?';
@@ -141,7 +146,7 @@ function  [success,record,history,result] = SpatialHearingTestNoiseStep(app,sign
             [success,record,history,result] = SpatialHearingTestNoiseStep(app,signalLevel,noiseLevel,speakers,noiseDetails,record,history,duration);
         case 'Finish the test'
                 record(end+1,:) = {SNRLevel,length(successSpeakers),regexprep(num2str(successSpeakers),'\s+',','),...
-                                 regexprep(regexprep(num2str((8-successSpeakers).*45),'\d(?=\s|$)','$0°,'),',$','')}};
+                                 regexprep(regexprep(num2str((8-successSpeakers).*45),'\d(?=\s|$)','$0°,'),',$','')};
                 record = sortrows(record,1,'descend');
                 success=1;
                 return;
