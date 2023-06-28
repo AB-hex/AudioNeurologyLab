@@ -63,7 +63,7 @@ function SpatialHearingTestHelper(app)
 %         else
 %             TXModeNoise = "TX1"; %Same Channel with signal
 %         end
-        
+        mdb.master.TX2_select = 1;
         mdb.(TXModeNoise).stimulus.stimulusSelect.(typeNoise) = 1;
         mdb.(TXModeNoise).stimulus.(typeNoise).amp = app.SpatialNoisedbEditField.Value;
     end
