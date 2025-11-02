@@ -15,7 +15,7 @@ function SpatialHearingTestHelper(app)
     
     %TODO: for custom words signal you will need to change both the quite
     %functino and noise function 
-    
+    load mdb;
     if(sum(OutputSelection)<=2)
         uialert(app.UIFigure,'select at least 3 outputs','Error');
         return;
@@ -37,7 +37,7 @@ function SpatialHearingTestHelper(app)
     end
     
      
-    load mdb
+
     [mdb.master.TX1_select , mdb.TX1.stimulus.stimulusSelect.(signalTypeStimulusSelect)]=deal(1,1);
     mdb.TX1.stimulus.(signalType).amp = app.SpatialSignaldbEditField.Value;
     mdb.TX1.stimulus.burstDuration = app.DurationsecEditField.Value;
