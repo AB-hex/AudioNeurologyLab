@@ -1,4 +1,4 @@
-function record_and_capture_bttn(recording_duration_s)
+function bttn_data = record_and_capture_bttn(recording_duration_s)
 % This script initiates a recording session using TDevAcc, creates a new data block,
 % and then captures and displays data from a 'BTTN' store in the new block.
 
@@ -97,7 +97,61 @@ if ~isfolder(block_path)
     error('Could not find the new block path: %s', block_path);
 end
 
-capture_bttn_data(block_path);
+% Inlined content of capture_bttn_data.m
+% Check if the directory exists (already checked above)
+% if ~isfolder(block_path)
+%     error('Error: The specified block path does not exist: %s', block_path);
+% end
+
+% Define the store name (already defined as STORE_NAME)
+% store_name = 'BTTN';
+
+% Use TDTbin2mat to read the data from the specified store
+try
+    % fprintf('Reading data from store \'%s\' in block: %s\n', STORE_NAME, block_path);
+    data = TDTbin2mat(block_path, 'STORE', STORE_NAME);
+    
+    % Check if the store was found and data was extracted
+    if isfield(data, 'streams') && isfield(data.streams, STORE_NAME)
+        bttn_data = data.streams.(STORE_NAME);
+        fprintf('Successfully extracted BTTN data.\n');
+        
+        % Display some information about the data
+        fprintf('Data size: %d x %d\n', size(bttn_data.data, 1), size(bttn_data.data, 2));
+        fprintf('Sampling rate: %.2f Hz\n', bttn_data.fs);
+        
+        % Display the first 10 samples
+        disp('First 10 samples:');
+        disp(bttn_data.data(1:min(10, end)));
+        
+    elseif isfield(data, 'epocs') && isfield(data.epocs, STORE_NAME)
+        bttn_data = data.epocs.(STORE_NAME);
+        fprintf('Successfully extracted BTTN data.\n');
+        
+        % Display some information about the epoc data
+        fprintf('Number of events: %d\n', length(bttn_data.onset));
+        disp('Onset times (first 10):');
+        disp(bttn_data.onset(1:min(10, end)));
+
+    elseif isfield(data, 'scalars') && isfield(data.scalars, STORE_NAME)
+        bttn_data = data.scalars.(STORE_NAME);
+        fprintf('Successfully extracted BTTN data.\n');
+        
+        % Display some information about the scalar data
+        fprintf('Number of events: %d\n', length(bttn_data.data));
+        disp('Scalar values (first 10):');
+        disp(bttn_data.data(1:min(10, end)));
+        disp('Timestamps (first 10):');
+        disp(bttn_data.ts(1:min(10, end)));
+
+    else
+        % warning('Could not find store \'%s\' in the block, or the store is empty.', STORE_NAME);
+        bttn_data = [];
+    end
+    
+catch ME
+    error('An error occurred while reading the TDT data: %s', ME.message);
+end
 
 % --- 11. Cleanup ---
 DA.CloseConnection;
