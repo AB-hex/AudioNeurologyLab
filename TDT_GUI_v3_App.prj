@@ -1,0 +1,104 @@
+<deployment-project plugin="plugin.apptool" plugin-version="1.0">
+  <configuration file="C:\Users\Lab\Desktop\TDT_multiChannelv4 with EEG Integration\TDT_GUI_v3_App.prj" location="C:\Users\Lab\Desktop\TDT_multiChannelv4 with EEG Integration" name="TDT_GUI_v3_App" target="target.mlapps" target-name="Package App">
+    <param.appname>TDT_GUI_v3_App</param.appname>
+    <param.authnamewatermark />
+    <param.email />
+    <param.company />
+    <param.icon />
+    <param.icons />
+    <param.summary />
+    <param.description />
+    <param.screenshot>C:\Users\Lab\AppData\Local\Temp\tp05d7eea6_e203_441e_a24d_fc0c95f8380c.png</param.screenshot>
+    <param.version>1.0</param.version>
+    <param.products.name />
+    <param.products.id />
+    <param.products.version />
+    <param.platforms />
+    <param.output>${PROJECT_ROOT}</param.output>
+    <param.guid>190df75b-134e-4285-8237-9e105557141b</param.guid>
+    <unset>
+      <param.authnamewatermark />
+      <param.email />
+      <param.company />
+      <param.icon />
+      <param.icons />
+      <param.summary />
+      <param.description />
+      <param.version />
+      <param.products.name />
+      <param.products.id />
+      <param.products.version />
+      <param.platforms />
+      <param.output />
+    </unset>
+    <fileset.main>
+      <file>${PROJECT_ROOT}\TDT_GUI_v3_App.mlapp</file>
+    </fileset.main>
+    <fileset.depfun>
+      <file>${PROJECT_ROOT}\BehavioralMain.m</file>
+      <file>${PROJECT_ROOT}\Circuit_Loader.m</file>
+      <file>${PROJECT_ROOT}\CuttingOnsetOffset.m</file>
+      <file>${PROJECT_ROOT}\DacVectorTransducerHelper.m</file>
+      <file>${PROJECT_ROOT}\DropValueChangedHelper.m</file>
+      <file>${PROJECT_ROOT}\ErrorMessage.m</file>
+      <file>${PROJECT_ROOT}\ExpreimentGenerator.mlapp</file>
+      <file>${PROJECT_ROOT}\FileOptions.mlapp</file>
+      <file>${PROJECT_ROOT}\gen_noise.m</file>
+      <file>${PROJECT_ROOT}\gen_sig.m</file>
+      <file>${PROJECT_ROOT}\gen_wav.m</file>
+      <file>${PROJECT_ROOT}\HandleExpriement.m</file>
+      <file>${PROJECT_ROOT}\Initialize_Selection.m</file>
+      <file>${PROJECT_ROOT}\mdb.mat</file>
+      <file>${PROJECT_ROOT}\ModulationTypeToFmAmModes.m</file>
+      <file>${PROJECT_ROOT}\NoiseOptionsApp.mlapp</file>
+      <file>${PROJECT_ROOT}\OptionsMenuOpenerHelper.m</file>
+      <file>${PROJECT_ROOT}\play_signal_multi.m</file>
+      <file>${PROJECT_ROOT}\PrepareMdb.m</file>
+      <file>${PROJECT_ROOT}\PrepareNoiseSegments.m</file>
+      <file>${PROJECT_ROOT}\PTModulationModeHelper.m</file>
+      <file>${PROJECT_ROOT}\PureTuneOptions.mlapp</file>
+      <file>${PROJECT_ROOT}\Report Functions\PrintData.m</file>
+      <file>${PROJECT_ROOT}\Report Functions\TXPrintData.m</file>
+      <file>${PROJECT_ROOT}\setSignalAmp.m</file>
+      <file>${PROJECT_ROOT}\SNRFinderHelper2.m</file>
+      <file>${PROJECT_ROOT}\SNRFinderPhase1Step.m</file>
+      <file>${PROJECT_ROOT}\SNRFinderPhase2Step.m</file>
+      <file>${PROJECT_ROOT}\SNRFinderPlayWord.m</file>
+      <file>${PROJECT_ROOT}\SpatialHearingTestHelper.m</file>
+      <file>${PROJECT_ROOT}\SpatialHearingTestNoiseStep.m</file>
+      <file>${PROJECT_ROOT}\SptialHearingTestQuiteStep.m</file>
+      <file>${PROJECT_ROOT}\TX1_create_signal.m</file>
+      <file>${PROJECT_ROOT}\TX2_create_signal.m</file>
+      <file>${PROJECT_ROOT}\TX3_create_signal.m</file>
+      <file>${PROJECT_ROOT}\TXall_stop_signal.m</file>
+      <file>${PROJECT_ROOT}\Update_Calibration.m</file>
+      <file>${PROJECT_ROOT}\UpdateFF2SpeakerMap.m</file>
+      <file>${PROJECT_ROOT}\wavread.m</file>
+    </fileset.depfun>
+    <fileset.resources />
+    <fileset.package />
+    <build-deliverables>
+      <file location="C:\Users\Lab\Desktop" name="TDT_multiChannelv4 with EEG Integration" optional="false">C:\Users\Lab\Desktop\TDT_multiChannelv4 with EEG Integration</file>
+    </build-deliverables>
+    <workflow />
+    <matlab>
+      <root>C:\Program Files\MATLAB\R2024a</root>
+      <toolboxes />
+    </matlab>
+    <platform>
+      <unix>false</unix>
+      <mac>false</mac>
+      <windows>true</windows>
+      <win2k>false</win2k>
+      <winxp>false</winxp>
+      <vista>false</vista>
+      <linux>false</linux>
+      <solaris>false</solaris>
+      <osver>10.0</osver>
+      <os32>false</os32>
+      <os64>true</os64>
+      <arch>win64</arch>
+      <matlab>true</matlab>
+    </platform>
+  </configuration>
+</deployment-project>

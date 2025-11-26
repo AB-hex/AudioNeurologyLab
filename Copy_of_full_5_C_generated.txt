@@ -1,0 +1,1403 @@
+/**************************************************************************
+   RPvds generated 'C' function for building circuit: 
+   Parameters values used in RPvds:     dn = 0 
+                                  SysSRATE = RPX_SRATE_25K 
+                               nTimeSlices = 10 
+ **************************************************************************/ 
+int BuildMyChain(int dn, int SysSRATE, int nTimeSlices)
+{
+    int iPar[8];
+    float *fPar = (float *)iPar;			
+
+    /* Setup system sample rate */			
+    if(RPXgetSRATE(dn) != SysSRATE)		
+        RPXsetSRATE(dn, SysSRATE);			
+
+    /* Clear the chain and rebuild it */	
+    RPXclrchain(dn, nTimeSlices);			
+
+    /* Ncmp=1:1  [ Switch ] -->  RSFlipFlop */
+    iPar[0]=0; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_RSFLIPFLOP, iPar, 2, 0, 0);
+
+    /* Ncmp=1:2   -->  And */
+    iPar[1]=(1:7); iPar[2]=(1:1); iPar[0]=2; 
+    RPXaddCmpDSP(dn, 0, RPX_AND, iPar, 3, 0, 0);
+
+    /* Ncmp=1:3  [ Buffer ] -->  SerialBuf */
+    iPar[0]=3000000; iPar[1]=0; iPar[2]=0; iPar[3]=0; iPar[4]=0; iPar[5]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_SERIALBUF, iPar, 6, 0, 0);
+
+    /* Ncmp=1:4   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:5   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:6  -->  SigPatch  */
+    iPar[0]=DSP_1+3; iPar[1]=RPX_PAR5;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:7   -->  iCompare */
+    iPar[0]=100000; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_ICOMPARE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:8   -->  Or */
+    iPar[1]=(1:66); iPar[2]=(1:7); iPar[0]=2; 
+    RPXaddCmpDSP(dn, 0, RPX_OR, iPar, 3, 0, 0);
+
+    /* Ncmp=1:9  -->  ParFeed  */
+    iPar[0]=DSP_1+3; iPar[1]=RPX_PAR2;  
+    RPXaddCmpDSP(dn, 0, RPX_PARFEED, iPar, 2, 0, 0);
+
+    /* Ncmp=1:10  -->  SigPatch  */
+    iPar[0]=DSP_1+3; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:11   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:12   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:13  -->  SigPatch  */
+    iPar[0]=DSP_1+3; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:14   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:15   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:16  -->  SigPatch  */
+    iPar[0]=DSP_1+3; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:17   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:18   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:19  -->  SigPatch  */
+    iPar[0]=DSP_1+3; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:20   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:21   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:22  -->  SigPatch  */
+    iPar[0]=DSP_1+3; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:23   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:24   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:25  -->  SigPatch  */
+    iPar[0]=DSP_1+3; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:26   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:27   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:28  -->  SigPatch  */
+    iPar[0]=DSP_1+3; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:29   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:30   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:31  -->  SigPatch  */
+    iPar[0]=DSP_1+3; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:32   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:33   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:34  -->  SigPatch  */
+    iPar[0]=DSP_1+3; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:35   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:36   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:37  -->  SigPatch  */
+    iPar[0]=DSP_1+3; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:38   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:39   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:40  -->  SigPatch  */
+    iPar[0]=DSP_1+3; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:41   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:42   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:43  -->  SigPatch  */
+    iPar[0]=DSP_1+3; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:44   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:45   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:46  -->  SigPatch  */
+    iPar[0]=DSP_1+3; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:47   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:48   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:49  -->  SigPatch  */
+    iPar[0]=DSP_1+3; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:50   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:51   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:52  -->  SigPatch  */
+    iPar[0]=DSP_1+3; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:53   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:54   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:55  -->  SigPatch  */
+    iPar[0]=DSP_1+3; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:56   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:57   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:58  -->  SigPatch  */
+    iPar[0]=DSP_1+3; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:59   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:60   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:61  [ SoftTrig1 ] -->  TrgIn */
+    iPar[0]=256; 
+    RPXaddCmpDSP(dn, 0, RPX_TRGIN, iPar, 1, 0, 0);
+
+    /* Ncmp=1:62  [ SoftTrig4 ] -->  TrgIn */
+    iPar[0]=2048; 
+    RPXaddCmpDSP(dn, 0, RPX_TRGIN, iPar, 1, 0, 0);
+
+    /* Ncmp=1:63  [ SoftTrig8 ] -->  TrgIn */
+    iPar[0]=32768; 
+    RPXaddCmpDSP(dn, 0, RPX_TRGIN, iPar, 1, 0, 0);
+
+    /* Ncmp=1:64  [ SoftTrig5 ] -->  TrgIn */
+    iPar[0]=4096; 
+    RPXaddCmpDSP(dn, 0, RPX_TRGIN, iPar, 1, 0, 0);
+
+    /* Ncmp=1:65   -->  Or */
+    iPar[1]=(1:63); iPar[2]=(1:64); iPar[0]=2; 
+    RPXaddCmpDSP(dn, 0, RPX_OR, iPar, 3, 0, 0);
+
+    /* Ncmp=1:66   -->  Or */
+    iPar[1]=(1:65); iPar[2]=(1:2); iPar[0]=2; 
+    RPXaddCmpDSP(dn, 0, RPX_OR, iPar, 3, 0, 0);
+
+    /* Ncmp=1:67  -->  ParFeed  */
+    iPar[0]=DSP_1+246; iPar[1]=RPX_PAR2;  
+    RPXaddCmpDSP(dn, 0, RPX_PARFEED, iPar, 2, 0, 0);
+
+    /* Ncmp=1:68  [ SoftTrig2 ] -->  TrgIn */
+    iPar[0]=512; 
+    RPXaddCmpDSP(dn, 0, RPX_TRGIN, iPar, 1, 0, 0);
+
+    /* Ncmp=1:69  [ Buffer ] -->  SerialBuf */
+    iPar[0]=3000000; iPar[1]=0; iPar[2]=0; iPar[3]=0; iPar[4]=0; iPar[5]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_SERIALBUF, iPar, 6, 0, 0);
+
+    /* Ncmp=1:70   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:71   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:72  -->  SigPatch  */
+    iPar[0]=DSP_1+69; iPar[1]=RPX_PAR5;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:73   -->  iCompare */
+    iPar[0]=100000; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_ICOMPARE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:74   -->  Or */
+    iPar[1]=(1:133); iPar[2]=(1:73); iPar[0]=2; 
+    RPXaddCmpDSP(dn, 0, RPX_OR, iPar, 3, 0, 0);
+
+    /* Ncmp=1:75  -->  ParFeed  */
+    iPar[0]=DSP_1+69; iPar[1]=RPX_PAR2;  
+    RPXaddCmpDSP(dn, 0, RPX_PARFEED, iPar, 2, 0, 0);
+
+    /* Ncmp=1:76  -->  SigPatch  */
+    iPar[0]=DSP_1+69; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:77   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:78   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:79  -->  SigPatch  */
+    iPar[0]=DSP_1+69; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:80   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:81   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:82  -->  SigPatch  */
+    iPar[0]=DSP_1+69; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:83   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:84   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:85  -->  SigPatch  */
+    iPar[0]=DSP_1+69; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:86   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:87   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:88  -->  SigPatch  */
+    iPar[0]=DSP_1+69; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:89   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:90   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:91  -->  SigPatch  */
+    iPar[0]=DSP_1+69; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:92   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:93   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:94  -->  SigPatch  */
+    iPar[0]=DSP_1+69; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:95   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:96   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:97  -->  SigPatch  */
+    iPar[0]=DSP_1+69; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:98   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:99   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:100  -->  SigPatch  */
+    iPar[0]=DSP_1+69; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:101   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:102   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:103  -->  SigPatch  */
+    iPar[0]=DSP_1+69; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:104   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:105   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:106  -->  SigPatch  */
+    iPar[0]=DSP_1+69; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:107   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:108   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:109  -->  SigPatch  */
+    iPar[0]=DSP_1+69; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:110   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:111   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:112  -->  SigPatch  */
+    iPar[0]=DSP_1+69; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:113   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:114   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:115  -->  SigPatch  */
+    iPar[0]=DSP_1+69; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:116   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:117   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:118  -->  SigPatch  */
+    iPar[0]=DSP_1+69; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:119   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:120   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:121  -->  SigPatch  */
+    iPar[0]=DSP_1+69; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:122   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:123   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:124  -->  SigPatch  */
+    iPar[0]=DSP_1+69; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:125   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:126   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:127  [ SoftTrig4 ] -->  TrgIn */
+    iPar[0]=2048; 
+    RPXaddCmpDSP(dn, 0, RPX_TRGIN, iPar, 1, 0, 0);
+
+    /* Ncmp=1:128  [ SoftTrig9 ] -->  TrgIn */
+    iPar[0]=65536; 
+    RPXaddCmpDSP(dn, 0, RPX_TRGIN, iPar, 1, 0, 0);
+
+    /* Ncmp=1:129  [ Switch ] -->  RSFlipFlop */
+    iPar[0]=0; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_RSFLIPFLOP, iPar, 2, 0, 0);
+
+    /* Ncmp=1:130   -->  And */
+    iPar[1]=(1:73); iPar[2]=(1:129); iPar[0]=2; 
+    RPXaddCmpDSP(dn, 0, RPX_AND, iPar, 3, 0, 0);
+
+    /* Ncmp=1:131  [ SoftTrig5 ] -->  TrgIn */
+    iPar[0]=4096; 
+    RPXaddCmpDSP(dn, 0, RPX_TRGIN, iPar, 1, 0, 0);
+
+    /* Ncmp=1:132   -->  Or */
+    iPar[1]=(1:128); iPar[2]=(1:131); iPar[0]=2; 
+    RPXaddCmpDSP(dn, 0, RPX_OR, iPar, 3, 0, 0);
+
+    /* Ncmp=1:133   -->  Or */
+    iPar[1]=(1:132); iPar[2]=(1:130); iPar[0]=2; 
+    RPXaddCmpDSP(dn, 0, RPX_OR, iPar, 3, 0, 0);
+
+    /* Ncmp=1:134  -->  ParFeed  */
+    iPar[0]=DSP_1+241; iPar[1]=RPX_PAR2;  
+    RPXaddCmpDSP(dn, 0, RPX_PARFEED, iPar, 2, 0, 0);
+
+    /* Ncmp=1:135  [ SoftTrig3 ] -->  TrgIn */
+    iPar[0]=1024; 
+    RPXaddCmpDSP(dn, 0, RPX_TRGIN, iPar, 1, 0, 0);
+
+    /* Ncmp=1:136  [ Buffer ] -->  SerialBuf */
+    iPar[0]=3000000; iPar[1]=0; iPar[2]=0; iPar[3]=0; iPar[4]=0; iPar[5]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_SERIALBUF, iPar, 6, 0, 0);
+
+    /* Ncmp=1:137   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:138   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:139   -->  Sum */
+    iPar[1]=(1:71); iPar[2]=(1:5); iPar[3]=(1:138); iPar[0]=3; 
+    RPXaddCmpDSP(dn, 0, RPX_SUM, iPar, 4, 0, 0);
+
+    /* Ncmp=1:140  [ Dac1 ] -->  DacOut */
+    iPar[0]=9; 
+    RPXaddCmpDSP(dn, 0, RPX_DACOUT, iPar, 1, 0, 0);
+
+    /* Ncmp=1:141  -->  SigPatch  */
+    iPar[0]=DSP_1+136; iPar[1]=RPX_PAR5;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:142   -->  iCompare */
+    iPar[0]=100000; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_ICOMPARE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:143   -->  Or */
+    iPar[1]=(1:236); iPar[2]=(1:142); iPar[0]=2; 
+    RPXaddCmpDSP(dn, 0, RPX_OR, iPar, 3, 0, 0);
+
+    /* Ncmp=1:144  -->  ParFeed  */
+    iPar[0]=DSP_1+136; iPar[1]=RPX_PAR2;  
+    RPXaddCmpDSP(dn, 0, RPX_PARFEED, iPar, 2, 0, 0);
+
+    /* Ncmp=1:145  -->  SigPatch  */
+    iPar[0]=DSP_1+136; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:146   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:147   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:148   -->  Sum */
+    iPar[1]=(1:81); iPar[2]=(1:15); iPar[3]=(1:147); iPar[0]=3; 
+    RPXaddCmpDSP(dn, 0, RPX_SUM, iPar, 4, 0, 0);
+
+    /* Ncmp=1:149  [ Dac5 ] -->  DacOut */
+    iPar[0]=13; 
+    RPXaddCmpDSP(dn, 0, RPX_DACOUT, iPar, 1, 0, 0);
+
+    /* Ncmp=1:150  -->  SigPatch  */
+    iPar[0]=DSP_1+136; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:151   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:152   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:153   -->  Sum */
+    iPar[1]=(1:78); iPar[2]=(1:12); iPar[3]=(1:152); iPar[0]=3; 
+    RPXaddCmpDSP(dn, 0, RPX_SUM, iPar, 4, 0, 0);
+
+    /* Ncmp=1:154  [ Dac2 ] -->  DacOut */
+    iPar[0]=10; 
+    RPXaddCmpDSP(dn, 0, RPX_DACOUT, iPar, 1, 0, 0);
+
+    /* Ncmp=1:155  -->  SigPatch  */
+    iPar[0]=DSP_1+136; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:156   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:157   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:158   -->  Sum */
+    iPar[1]=(1:87); iPar[2]=(1:21); iPar[3]=(1:157); iPar[0]=3; 
+    RPXaddCmpDSP(dn, 0, RPX_SUM, iPar, 4, 0, 0);
+
+    /* Ncmp=1:159  [ Dac4 ] -->  DacOut */
+    iPar[0]=12; 
+    RPXaddCmpDSP(dn, 0, RPX_DACOUT, iPar, 1, 0, 0);
+
+    /* Ncmp=1:160  -->  SigPatch  */
+    iPar[0]=DSP_1+136; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:161   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:162   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:163   -->  Sum */
+    iPar[1]=(1:84); iPar[2]=(1:18); iPar[3]=(1:162); iPar[0]=3; 
+    RPXaddCmpDSP(dn, 0, RPX_SUM, iPar, 4, 0, 0);
+
+    /* Ncmp=1:164  [ Dac3 ] -->  DacOut */
+    iPar[0]=11; 
+    RPXaddCmpDSP(dn, 0, RPX_DACOUT, iPar, 1, 0, 0);
+
+    /* Ncmp=1:165  -->  SigPatch  */
+    iPar[0]=DSP_1+136; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:166   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:167   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:168   -->  Sum */
+    iPar[1]=(1:90); iPar[2]=(1:24); iPar[3]=(1:167); iPar[0]=3; 
+    RPXaddCmpDSP(dn, 0, RPX_SUM, iPar, 4, 0, 0);
+
+    /* Ncmp=1:169  [ Dac6 ] -->  DacOut */
+    iPar[0]=14; 
+    RPXaddCmpDSP(dn, 0, RPX_DACOUT, iPar, 1, 0, 0);
+
+    /* Ncmp=1:170  -->  SigPatch  */
+    iPar[0]=DSP_1+136; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:171   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:172   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:173   -->  Sum */
+    iPar[1]=(1:93); iPar[2]=(1:27); iPar[3]=(1:172); iPar[0]=3; 
+    RPXaddCmpDSP(dn, 0, RPX_SUM, iPar, 4, 0, 0);
+
+    /* Ncmp=1:174  [ Dac7 ] -->  DacOut */
+    iPar[0]=15; 
+    RPXaddCmpDSP(dn, 0, RPX_DACOUT, iPar, 1, 0, 0);
+
+    /* Ncmp=1:175  -->  SigPatch  */
+    iPar[0]=DSP_1+136; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:176   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:177   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:178   -->  Sum */
+    iPar[1]=(1:96); iPar[2]=(1:30); iPar[3]=(1:177); iPar[0]=3; 
+    RPXaddCmpDSP(dn, 0, RPX_SUM, iPar, 4, 0, 0);
+
+    /* Ncmp=1:179  [ Dac8 ] -->  DacOut */
+    iPar[0]=16; 
+    RPXaddCmpDSP(dn, 0, RPX_DACOUT, iPar, 1, 0, 0);
+
+    /* Ncmp=1:180  -->  SigPatch  */
+    iPar[0]=DSP_1+136; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:181   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:182   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:183   -->  Sum */
+    iPar[1]=(1:99); iPar[2]=(1:33); iPar[3]=(1:182); iPar[0]=3; 
+    RPXaddCmpDSP(dn, 0, RPX_SUM, iPar, 4, 0, 0);
+
+    /* Ncmp=1:184  [ Dac9 ] -->  DacOut */
+    iPar[0]=17; 
+    RPXaddCmpDSP(dn, 0, RPX_DACOUT, iPar, 1, 0, 0);
+
+    /* Ncmp=1:185  -->  SigPatch  */
+    iPar[0]=DSP_1+136; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:186   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:187   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:188   -->  Sum */
+    iPar[1]=(1:102); iPar[2]=(1:36); iPar[3]=(1:187); iPar[0]=3; 
+    RPXaddCmpDSP(dn, 0, RPX_SUM, iPar, 4, 0, 0);
+
+    /* Ncmp=1:189  [ Dac10 ] -->  DacOut */
+    iPar[0]=18; 
+    RPXaddCmpDSP(dn, 0, RPX_DACOUT, iPar, 1, 0, 0);
+
+    /* Ncmp=1:190  -->  SigPatch  */
+    iPar[0]=DSP_1+136; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:191   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:192   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:193   -->  Sum */
+    iPar[1]=(1:105); iPar[2]=(1:39); iPar[3]=(1:192); iPar[0]=3; 
+    RPXaddCmpDSP(dn, 0, RPX_SUM, iPar, 4, 0, 0);
+
+    /* Ncmp=1:194  [ Dac11 ] -->  DacOut */
+    iPar[0]=19; 
+    RPXaddCmpDSP(dn, 0, RPX_DACOUT, iPar, 1, 0, 0);
+
+    /* Ncmp=1:195  -->  SigPatch  */
+    iPar[0]=DSP_1+136; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:196   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:197   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:198   -->  Sum */
+    iPar[1]=(1:108); iPar[2]=(1:42); iPar[3]=(1:197); iPar[0]=3; 
+    RPXaddCmpDSP(dn, 0, RPX_SUM, iPar, 4, 0, 0);
+
+    /* Ncmp=1:199  [ Dac12 ] -->  DacOut */
+    iPar[0]=20; 
+    RPXaddCmpDSP(dn, 0, RPX_DACOUT, iPar, 1, 0, 0);
+
+    /* Ncmp=1:200  -->  SigPatch  */
+    iPar[0]=DSP_1+136; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:201   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:202   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:203   -->  Sum */
+    iPar[1]=(1:111); iPar[2]=(1:45); iPar[3]=(1:202); iPar[0]=3; 
+    RPXaddCmpDSP(dn, 0, RPX_SUM, iPar, 4, 0, 0);
+
+    /* Ncmp=1:204  [ Dac13 ] -->  DacOut */
+    iPar[0]=21; 
+    RPXaddCmpDSP(dn, 0, RPX_DACOUT, iPar, 1, 0, 0);
+
+    /* Ncmp=1:205  -->  SigPatch  */
+    iPar[0]=DSP_1+136; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:206   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:207   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:208   -->  Sum */
+    iPar[1]=(1:114); iPar[2]=(1:48); iPar[3]=(1:207); iPar[0]=3; 
+    RPXaddCmpDSP(dn, 0, RPX_SUM, iPar, 4, 0, 0);
+
+    /* Ncmp=1:209  [ Dac14 ] -->  DacOut */
+    iPar[0]=22; 
+    RPXaddCmpDSP(dn, 0, RPX_DACOUT, iPar, 1, 0, 0);
+
+    /* Ncmp=1:210  -->  SigPatch  */
+    iPar[0]=DSP_1+136; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:211   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:212   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:213   -->  Sum */
+    iPar[1]=(1:117); iPar[2]=(1:51); iPar[3]=(1:212); iPar[0]=3; 
+    RPXaddCmpDSP(dn, 0, RPX_SUM, iPar, 4, 0, 0);
+
+    /* Ncmp=1:214  [ Dac15 ] -->  DacOut */
+    iPar[0]=23; 
+    RPXaddCmpDSP(dn, 0, RPX_DACOUT, iPar, 1, 0, 0);
+
+    /* Ncmp=1:215  -->  SigPatch  */
+    iPar[0]=DSP_1+136; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:216   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:217   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:218   -->  Sum */
+    iPar[1]=(1:120); iPar[2]=(1:54); iPar[3]=(1:217); iPar[0]=3; 
+    RPXaddCmpDSP(dn, 0, RPX_SUM, iPar, 4, 0, 0);
+
+    /* Ncmp=1:219  [ Dac16 ] -->  DacOut */
+    iPar[0]=24; 
+    RPXaddCmpDSP(dn, 0, RPX_DACOUT, iPar, 1, 0, 0);
+
+    /* Ncmp=1:220  -->  SigPatch  */
+    iPar[0]=DSP_1+136; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:221   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:222   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:223   -->  Sum */
+    iPar[1]=(1:123); iPar[2]=(1:57); iPar[3]=(1:222); iPar[0]=3; 
+    RPXaddCmpDSP(dn, 0, RPX_SUM, iPar, 4, 0, 0);
+
+    /* Ncmp=1:224  [ Dac17 ] -->  DacOut */
+    iPar[0]=23; 
+    RPXaddCmpDSP(dn, 0, RPX_DACOUT, iPar, 1, 0, 0);
+
+    /* Ncmp=1:225  -->  SigPatch  */
+    iPar[0]=DSP_1+136; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 0, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=1:226   -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 0, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=1:227   -->  Cos2Gate */
+    fPar[0]=10.0f; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_COS2GATE, iPar, 2, 0, 0);
+
+    /* Ncmp=1:228   -->  Sum */
+    iPar[1]=(1:126); iPar[2]=(1:60); iPar[3]=(1:227); iPar[0]=3; 
+    RPXaddCmpDSP(dn, 0, RPX_SUM, iPar, 4, 0, 0);
+
+    /* Ncmp=1:229  [ Dac18 ] -->  DacOut */
+    iPar[0]=24; 
+    RPXaddCmpDSP(dn, 0, RPX_DACOUT, iPar, 1, 0, 0);
+
+    /* Ncmp=1:230  [ SoftTrig4 ] -->  TrgIn */
+    iPar[0]=2048; 
+    RPXaddCmpDSP(dn, 0, RPX_TRGIN, iPar, 1, 0, 0);
+
+    /* Ncmp=1:231  [ SoftTrig10 ] -->  TrgIn */
+    iPar[0]=131072; 
+    RPXaddCmpDSP(dn, 0, RPX_TRGIN, iPar, 1, 0, 0);
+
+    /* Ncmp=1:232  [ Switch ] -->  RSFlipFlop */
+    iPar[0]=0; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_RSFLIPFLOP, iPar, 2, 0, 0);
+
+    /* Ncmp=1:233   -->  And */
+    iPar[1]=(1:142); iPar[2]=(1:232); iPar[0]=2; 
+    RPXaddCmpDSP(dn, 0, RPX_AND, iPar, 3, 0, 0);
+
+    /* Ncmp=1:234  [ SoftTrig5 ] -->  TrgIn */
+    iPar[0]=4096; 
+    RPXaddCmpDSP(dn, 0, RPX_TRGIN, iPar, 1, 0, 0);
+
+    /* Ncmp=1:235   -->  Or */
+    iPar[1]=(1:231); iPar[2]=(1:234); iPar[0]=2; 
+    RPXaddCmpDSP(dn, 0, RPX_OR, iPar, 3, 0, 0);
+
+    /* Ncmp=1:236   -->  Or */
+    iPar[1]=(1:235); iPar[2]=(1:233); iPar[0]=2; 
+    RPXaddCmpDSP(dn, 0, RPX_OR, iPar, 3, 0, 0);
+
+    /* Ncmp=1:237  -->  ParFeed  */
+    iPar[0]=DSP_1+250; iPar[1]=RPX_PAR2;  
+    RPXaddCmpDSP(dn, 0, RPX_PARFEED, iPar, 2, 0, 0);
+
+    /* Ncmp=1:238  [ SoftTrig6 ] -->  TrgIn */
+    iPar[0]=8192; 
+    RPXaddCmpDSP(dn, 0, RPX_TRGIN, iPar, 1, 0, 0);
+
+    /* Ncmp=1:239   -->  Or */
+    iPar[1]=(1:68); iPar[2]=(1:238); iPar[3]=(1:127); iPar[0]=3; 
+    RPXaddCmpDSP(dn, 0, RPX_OR, iPar, 4, 0, 0);
+
+    /* Ncmp=1:240  -->  ParFeed  */
+    iPar[0]=DSP_1+241; iPar[1]=RPX_PAR1;  
+    RPXaddCmpDSP(dn, 0, RPX_PARFEED, iPar, 2, 0, 0);
+
+    /* Ncmp=1:241  [ Switch ] -->  RSFlipFlop */
+    iPar[0]=0; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_RSFLIPFLOP, iPar, 2, 0, 0);
+
+    /* Ncmp=1:242  -->  ParFeed  */
+    iPar[0]=DSP_1+69; iPar[1]=RPX_PAR3;  
+    RPXaddCmpDSP(dn, 0, RPX_PARFEED, iPar, 2, 0, 0);
+
+    /* Ncmp=1:243  [ SoftTrig7 ] -->  TrgIn */
+    iPar[0]=16384; 
+    RPXaddCmpDSP(dn, 0, RPX_TRGIN, iPar, 1, 0, 0);
+
+    /* Ncmp=1:244   -->  Or */
+    iPar[1]=(1:61); iPar[2]=(1:238); iPar[3]=(1:243); iPar[4]=(1:62); iPar[0]=4; 
+    RPXaddCmpDSP(dn, 0, RPX_OR, iPar, 5, 0, 0);
+
+    /* Ncmp=1:245  -->  ParFeed  */
+    iPar[0]=DSP_1+246; iPar[1]=RPX_PAR1;  
+    RPXaddCmpDSP(dn, 0, RPX_PARFEED, iPar, 2, 0, 0);
+
+    /* Ncmp=1:246  [ Switch ] -->  RSFlipFlop */
+    iPar[0]=0; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_RSFLIPFLOP, iPar, 2, 0, 0);
+
+    /* Ncmp=1:247  -->  ParFeed  */
+    iPar[0]=DSP_1+3; iPar[1]=RPX_PAR3;  
+    RPXaddCmpDSP(dn, 0, RPX_PARFEED, iPar, 2, 0, 0);
+
+    /* Ncmp=1:248   -->  Or */
+    iPar[1]=(1:135); iPar[2]=(1:243); iPar[3]=(1:230); iPar[0]=3; 
+    RPXaddCmpDSP(dn, 0, RPX_OR, iPar, 4, 0, 0);
+
+    /* Ncmp=1:249  -->  ParFeed  */
+    iPar[0]=DSP_1+250; iPar[1]=RPX_PAR1;  
+    RPXaddCmpDSP(dn, 0, RPX_PARFEED, iPar, 2, 0, 0);
+
+    /* Ncmp=1:250  [ Switch ] -->  RSFlipFlop */
+    iPar[0]=0; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 0, RPX_RSFLIPFLOP, iPar, 2, 0, 0);
+
+    /* Ncmp=1:251  -->  ParFeed  */
+    iPar[0]=DSP_1+136; iPar[1]=RPX_PAR3;  
+    RPXaddCmpDSP(dn, 0, RPX_PARFEED, iPar, 2, 0, 0);
+
+    /* Ncmp=2:1   -->  CycUsage */
+    RPXaddCmpDSP(dn, 1, RPX_CYCUSAGE, iPar, 0, 0, 0);
+
+    /* Ncmp=2:2  [ ExtZbusA ] -->  TrgIn */
+    iPar[0]=2; 
+    RPXaddCmpDSP(dn, 1, RPX_TRGIN, iPar, 1, 0, 0);
+
+    /* Ncmp=2:3  [ ExtEdge ] -->  EdgeDetect */
+    iPar[0]=0; 
+    RPXaddCmpDSP(dn, 1, RPX_EDGEDETECT, iPar, 1, 0, 0);
+
+    /* Ncmp=2:4  -->  ParFeed  */
+    iPar[0]=DSP_2+6; iPar[1]=RPX_PAR1;  
+    RPXaddCmpDSP(dn, 1, RPX_PARFEED, iPar, 2, 0, 0);
+
+    /* Ncmp=2:5  [ Reset ] -->  zHopOut */
+    iPar[0]=0; iPar[1]=1; 
+    RPXaddCmpDSP(dn, 1, RPX_ZHOPOUT, iPar, 2, 0, 0);
+
+    /* Ncmp=2:6  [ ExtSimp ] -->  SimpCount */
+    iPar[0]=0; iPar[1]=1; 
+    RPXaddCmpDSP(dn, 1, RPX_SIMPCOUNT, iPar, 2, 0, 0);
+
+    /* Ncmp=2:7  [ iTime ] -->  zHopOut */
+    iPar[0]=0; iPar[1]=3; 
+    RPXaddCmpDSP(dn, 1, RPX_ZHOPOUT, iPar, 2, 0, 0);
+
+    /* Ncmp=2:8  -->  SigPatch  */
+    iPar[0]=DSP_2+2; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 1, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=2:9   -->  SampDelay */
+    iPar[0]=1; 
+    RPXaddCmpDSP(dn, 1, RPX_SAMPDELAY, iPar, 1, 0, 0);
+
+    /* Ncmp=2:10  -->  ParFeed  */
+    iPar[0]=DSP_2+11; iPar[1]=RPX_PAR1;  
+    RPXaddCmpDSP(dn, 1, RPX_PARFEED, iPar, 2, 0, 0);
+
+    /* Ncmp=2:11   -->  ConstL */
+    iPar[0]=0; 
+    RPXaddCmpDSP(dn, 1, RPX_CONSTL, iPar, 1, 0, 0);
+
+    /* Ncmp=2:12  [ Enable ] -->  zHopOut */
+    iPar[0]=0; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 1, RPX_ZHOPOUT, iPar, 2, 0, 0);
+
+    /* Ncmp=2:13  [ Enable ] -->  zHopIn */
+    iPar[0]=0; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 1, RPX_ZHOPIN, iPar, 2, 0, 0);
+
+    /* Ncmp=2:14  -->  ParFeed  */
+    iPar[0]=DSP_2+19; iPar[1]=RPX_PAR3;  
+    RPXaddCmpDSP(dn, 1, RPX_PARFEED, iPar, 2, 0, 0);
+
+    /* Ncmp=2:15  [ Reset ] -->  zHopIn */
+    iPar[0]=0; iPar[1]=1; 
+    RPXaddCmpDSP(dn, 1, RPX_ZHOPIN, iPar, 2, 0, 0);
+
+    /* Ncmp=2:16  -->  ParFeed  */
+    iPar[0]=DSP_2+19; iPar[1]=RPX_PAR4;  
+    RPXaddCmpDSP(dn, 1, RPX_PARFEED, iPar, 2, 0, 0);
+
+    /* Ncmp=2:17  -->  ParFeed  */
+    iPar[0]=DSP_2+30; iPar[1]=RPX_PAR2;  
+    RPXaddCmpDSP(dn, 1, RPX_PARFEED, iPar, 2, 0, 0);
+
+    /* Ncmp=2:18  -->  ParFeed  */
+    iPar[0]=DSP_2+33; iPar[1]=RPX_PAR2;  
+    RPXaddCmpDSP(dn, 1, RPX_PARFEED, iPar, 2, 0, 0);
+
+    /* Ncmp=2:19  [ TickerPulse ] -->  PulseTrain2 */
+    iPar[0]=100000; iPar[1]=8; iPar[2]=1; iPar[3]=0; iPar[4]=0; iPar[5]=0; 
+    RPXaddCmpDSP(dn, 1, RPX_PULSETRAIN2, iPar, 6, 0, 0);
+
+    /* Ncmp=2:20  -->  PatchFeed   */
+    iPar[0]=DSP_2+19; iPar[1]=RPX_PAR6; iPar[2]=DSP_2+34; iPar[3]=RPX_PAR1; 
+    RPXaddCmpDSP(dn, 1, RPX_PATCHFEED, iPar, 4, 0, 0);
+
+    /* Ncmp=2:21  [ SwFire ] -->  zHopOut */
+    iPar[0]=0; iPar[1]=2; 
+    RPXaddCmpDSP(dn, 1, RPX_ZHOPOUT, iPar, 2, 0, 0);
+
+    /* Ncmp=2:22  -->  SigPatch  */
+    iPar[0]=DSP_2+19; iPar[1]=RPX_PAR6;  
+    RPXaddCmpDSP(dn, 1, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=2:23  [ TickerCompare ] -->  iCompare */
+    iPar[0]=8; iPar[1]=4; 
+    RPXaddCmpDSP(dn, 1, RPX_ICOMPARE, iPar, 2, 0, 0);
+
+    /* Ncmp=2:24  -->  SigPatch  */
+    iPar[0]=DSP_2+19; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 1, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=2:25  [ SwFireZ ] -->  SampDelay */
+    iPar[0]=2; 
+    RPXaddCmpDSP(dn, 1, RPX_SAMPDELAY, iPar, 1, 0, 0);
+
+    /* Ncmp=2:26  -->  ParFeed  */
+    iPar[0]=DSP_2+30; iPar[1]=RPX_PAR3;  
+    RPXaddCmpDSP(dn, 1, RPX_PARFEED, iPar, 2, 0, 0);
+
+    /* Ncmp=2:27  -->  ParFeed  */
+    iPar[0]=DSP_2+33; iPar[1]=RPX_PAR3;  
+    RPXaddCmpDSP(dn, 1, RPX_PARFEED, iPar, 2, 0, 0);
+
+    /* Ncmp=2:28  -->  SigPatch  */
+    iPar[0]=DSP_2+19; iPar[1]=RPX_PAR6;  
+    RPXaddCmpDSP(dn, 1, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=2:29  [ SweepRam1 ] -->  Int2Float */
+    fPar[0]=1.0f; 
+    RPXaddCmpDSP(dn, 1, RPX_INT2FLOAT, iPar, 1, 0, 0);
+
+    /* Ncmp=2:30  [ SweepRam1 ] -->  SerStore */
+    iPar[0]=10000; iPar[1]=0; iPar[2]=1; iPar[3]=0; 
+    RPXaddCmpDSP(dn, 1, RPX_SERSTORE, iPar, 4, 0, 0);
+
+    /* Ncmp=2:31  [ iTime ] -->  zHopIn */
+    iPar[0]=0; iPar[1]=3; 
+    RPXaddCmpDSP(dn, 1, RPX_ZHOPIN, iPar, 2, 0, 0);
+
+    /* Ncmp=2:32  [ SweepRam2 ] -->  SampDelay */
+    iPar[0]=2; 
+    RPXaddCmpDSP(dn, 1, RPX_SAMPDELAY, iPar, 1, 0, 0);
+
+    /* Ncmp=2:33  [ SweepRam2 ] -->  SerStore */
+    iPar[0]=10000; iPar[1]=0; iPar[2]=1; iPar[3]=0; 
+    RPXaddCmpDSP(dn, 1, RPX_SERSTORE, iPar, 4, 0, 0);
+
+    /* Ncmp=2:34   -->  ConstI */
+    iPar[0]=0; 
+    RPXaddCmpDSP(dn, 1, RPX_CONSTI, iPar, 1, 0, 0);
+
+    /* Ncmp=2:35  [ Reset ] -->  zHopIn */
+    iPar[0]=0; iPar[1]=1; 
+    RPXaddCmpDSP(dn, 1, RPX_ZHOPIN, iPar, 2, 0, 0);
+
+    /* Ncmp=2:36  -->  MultiFeed   */
+    iPar[0]=   1FFFF; iPar[1]= 2C9025B; iPar[2]= 3890329; iPar[3]=     3E9; 
+    iPar[4]=       0; iPar[5]=       0; iPar[6]=       0; iPar[7]=       0;
+    RPXaddCmpDSP(dn, 1, RPX_MULTIFEED, iPar, 8, 0, 0);
+
+    /* Ncmp=2:37  [ PulseTrain ] -->  PulseTrain2 */
+    iPar[0]=20; iPar[1]=-1; iPar[2]=1; iPar[3]=0; iPar[4]=0; iPar[5]=0; 
+    RPXaddCmpDSP(dn, 1, RPX_PULSETRAIN2, iPar, 6, 0, 0);
+
+    /* Ncmp=2:38  -->  MultiFeed   */
+    iPar[0]=   1FFFF; iPar[1]= 32A02CA; iPar[2]= 3EA038A; iPar[3]=       0; 
+    iPar[4]=       0; iPar[5]=       0; iPar[6]=       0; iPar[7]=       0;
+    RPXaddCmpDSP(dn, 1, RPX_MULTIFEED, iPar, 8, 0, 0);
+
+    /* Ncmp=2:39   -->  BitIn */
+    iPar[0]=1; 
+    RPXaddCmpDSP(dn, 1, RPX_BITIN, iPar, 1, 0, 0);
+
+    /* Ncmp=2:40   -->  DeBounce */
+    iPar[0]=10; 
+    RPXaddCmpDSP(dn, 1, RPX_DEBOUNCE, iPar, 1, 0, 0);
+
+    /* Ncmp=2:41   -->  TTL2Float */
+    fPar[0]=1.0f; 
+    RPXaddCmpDSP(dn, 1, RPX_TTL2FLOAT, iPar, 1, 0, 0);
+
+    /* Ncmp=2:42  [ Store1 ] -->  Float2Float */
+    RPXaddCmpDSP(dn, 1, RPX_FLOAT2FLOAT, iPar, 0, 0, 0);
+
+    /* Ncmp=2:43  [ Scale ] -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 1, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=2:44  [ Ram ] -->  SerStore */
+    iPar[0]=36608; iPar[1]=0; iPar[2]=1; iPar[3]=0; 
+    RPXaddCmpDSP(dn, 1, RPX_SERSTORE, iPar, 4, 0, 0);
+
+    /* Ncmp=2:45   -->  BitIn */
+    iPar[0]=2; 
+    RPXaddCmpDSP(dn, 1, RPX_BITIN, iPar, 1, 0, 0);
+
+    /* Ncmp=2:46   -->  DeBounce */
+    iPar[0]=10; 
+    RPXaddCmpDSP(dn, 1, RPX_DEBOUNCE, iPar, 1, 0, 0);
+
+    /* Ncmp=2:47   -->  TTL2Float */
+    fPar[0]=1.0f; 
+    RPXaddCmpDSP(dn, 1, RPX_TTL2FLOAT, iPar, 1, 0, 0);
+
+    /* Ncmp=2:48  [ Store2 ] -->  Float2Float */
+    RPXaddCmpDSP(dn, 1, RPX_FLOAT2FLOAT, iPar, 0, 0, 0);
+
+    /* Ncmp=2:49  [ Scale ] -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 1, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=2:50  [ Ram ] -->  SerStore */
+    iPar[0]=36608; iPar[1]=0; iPar[2]=1; iPar[3]=0; 
+    RPXaddCmpDSP(dn, 1, RPX_SERSTORE, iPar, 4, 0, 0);
+
+    /* Ncmp=2:51   -->  BitIn */
+    iPar[0]=4; 
+    RPXaddCmpDSP(dn, 1, RPX_BITIN, iPar, 1, 0, 0);
+
+    /* Ncmp=2:52   -->  DeBounce */
+    iPar[0]=10; 
+    RPXaddCmpDSP(dn, 1, RPX_DEBOUNCE, iPar, 1, 0, 0);
+
+    /* Ncmp=2:53   -->  TTL2Float */
+    fPar[0]=1.0f; 
+    RPXaddCmpDSP(dn, 1, RPX_TTL2FLOAT, iPar, 1, 0, 0);
+
+    /* Ncmp=2:54  [ Store3 ] -->  Float2Float */
+    RPXaddCmpDSP(dn, 1, RPX_FLOAT2FLOAT, iPar, 0, 0, 0);
+
+    /* Ncmp=2:55  [ Scale ] -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 1, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=2:56  [ Ram ] -->  SerStore */
+    iPar[0]=36608; iPar[1]=0; iPar[2]=1; iPar[3]=0; 
+    RPXaddCmpDSP(dn, 1, RPX_SERSTORE, iPar, 4, 0, 0);
+
+    /* Ncmp=2:57   -->  BitIn */
+    iPar[0]=8; 
+    RPXaddCmpDSP(dn, 1, RPX_BITIN, iPar, 1, 0, 0);
+
+    /* Ncmp=2:58   -->  DeBounce */
+    iPar[0]=10; 
+    RPXaddCmpDSP(dn, 1, RPX_DEBOUNCE, iPar, 1, 0, 0);
+
+    /* Ncmp=2:59   -->  TTL2Float */
+    fPar[0]=1.0f; 
+    RPXaddCmpDSP(dn, 1, RPX_TTL2FLOAT, iPar, 1, 0, 0);
+
+    /* Ncmp=2:60  [ Store4 ] -->  Float2Float */
+    RPXaddCmpDSP(dn, 1, RPX_FLOAT2FLOAT, iPar, 0, 0, 0);
+
+    /* Ncmp=2:61  [ Scale ] -->  ScaleAdd */
+    fPar[0]=1.0f; fPar[1]=0.0f; 
+    RPXaddCmpDSP(dn, 1, RPX_SCALEADD, iPar, 2, 0, 0);
+
+    /* Ncmp=2:62  [ Ram ] -->  SerStore */
+    iPar[0]=36608; iPar[1]=0; iPar[2]=1; iPar[3]=0; 
+    RPXaddCmpDSP(dn, 1, RPX_SERSTORE, iPar, 4, 0, 0);
+
+    /* Ncmp=2:63  [ iTime ] -->  zHopIn */
+    iPar[0]=0; iPar[1]=3; 
+    RPXaddCmpDSP(dn, 1, RPX_ZHOPIN, iPar, 2, 0, 0);
+
+    /* Ncmp=2:64  [ Enable ] -->  zHopIn */
+    iPar[0]=0; iPar[1]=0; 
+    RPXaddCmpDSP(dn, 1, RPX_ZHOPIN, iPar, 2, 0, 0);
+
+    /* Ncmp=3:1  [ Reset ] -->  zHopIn */
+    iPar[0]=0; iPar[1]=1; 
+    RPXaddCmpDSP(dn, 2, RPX_ZHOPIN, iPar, 2, 0, 0);
+
+    /* Ncmp=3:2  -->  ParFeed  */
+    iPar[0]=DSP_3+14; iPar[1]=RPX_PAR2;  
+    RPXaddCmpDSP(dn, 2, RPX_PARFEED, iPar, 2, 0, 0);
+
+    /* Ncmp=3:3  -->  ParFeed  */
+    iPar[0]=DSP_3+16; iPar[1]=RPX_PAR2;  
+    RPXaddCmpDSP(dn, 2, RPX_PARFEED, iPar, 2, 0, 0);
+
+    /* Ncmp=3:4  [ SwFire ] -->  zHopIn */
+    iPar[0]=0; iPar[1]=2; 
+    RPXaddCmpDSP(dn, 2, RPX_ZHOPIN, iPar, 2, 0, 0);
+
+    /* Ncmp=3:5   -->  ConstL */
+    iPar[0]=0; 
+    RPXaddCmpDSP(dn, 2, RPX_CONSTL, iPar, 1, 0, 0);
+
+    /* Ncmp=3:6  [ RiseEdge ] -->  EdgeDetect */
+    iPar[0]=0; 
+    RPXaddCmpDSP(dn, 2, RPX_EDGEDETECT, iPar, 1, 0, 0);
+
+    /* Ncmp=3:7  -->  SigPatch  */
+    iPar[0]=DSP_3+5; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 2, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=3:8  [ FallEdge ] -->  EdgeDetect */
+    iPar[0]=1; 
+    RPXaddCmpDSP(dn, 2, RPX_EDGEDETECT, iPar, 1, 0, 0);
+
+    /* Ncmp=3:9  [ TrgOr ] -->  Or */
+    iPar[1]=(3:6); iPar[2]=(3:8); iPar[0]=2; 
+    RPXaddCmpDSP(dn, 2, RPX_OR, iPar, 3, 0, 0);
+
+    /* Ncmp=3:10  -->  ParFeed  */
+    iPar[0]=DSP_3+14; iPar[1]=RPX_PAR3;  
+    RPXaddCmpDSP(dn, 2, RPX_PARFEED, iPar, 2, 0, 0);
+
+    /* Ncmp=3:11  -->  ParFeed  */
+    iPar[0]=DSP_3+16; iPar[1]=RPX_PAR3;  
+    RPXaddCmpDSP(dn, 2, RPX_PARFEED, iPar, 2, 0, 0);
+
+    /* Ncmp=3:12   -->  ConstF */
+    fPar[0]=1.0f; 
+    RPXaddCmpDSP(dn, 2, RPX_CONSTF, iPar, 1, 0, 0);
+
+    /* Ncmp=3:13  [  ] -->  Float2Float */
+    RPXaddCmpDSP(dn, 2, RPX_FLOAT2FLOAT, iPar, 0, 0, 0);
+
+    /* Ncmp=3:14  [ EpocRam ] -->  SerStore */
+    iPar[0]=10000; iPar[1]=0; iPar[2]=1; iPar[3]=0; 
+    RPXaddCmpDSP(dn, 2, RPX_SERSTORE, iPar, 4, 0, 0);
+
+    /* Ncmp=3:15  [ iTime ] -->  zHopIn */
+    iPar[0]=0; iPar[1]=3; 
+    RPXaddCmpDSP(dn, 2, RPX_ZHOPIN, iPar, 2, 0, 0);
+
+    /* Ncmp=3:16  [ EpocRamT ] -->  SerStore */
+    iPar[0]=10000; iPar[1]=0; iPar[2]=1; iPar[3]=0; 
+    RPXaddCmpDSP(dn, 2, RPX_SERSTORE, iPar, 4, 0, 0);
+
+    /* Ncmp=3:17  [ Reset ] -->  zHopIn */
+    iPar[0]=0; iPar[1]=1; 
+    RPXaddCmpDSP(dn, 2, RPX_ZHOPIN, iPar, 2, 0, 0);
+
+    /* Ncmp=3:18  -->  ParFeed  */
+    iPar[0]=DSP_3+30; iPar[1]=RPX_PAR2;  
+    RPXaddCmpDSP(dn, 2, RPX_PARFEED, iPar, 2, 0, 0);
+
+    /* Ncmp=3:19  -->  ParFeed  */
+    iPar[0]=DSP_3+32; iPar[1]=RPX_PAR2;  
+    RPXaddCmpDSP(dn, 2, RPX_PARFEED, iPar, 2, 0, 0);
+
+    /* Ncmp=3:20  [ SwFire ] -->  zHopIn */
+    iPar[0]=0; iPar[1]=2; 
+    RPXaddCmpDSP(dn, 2, RPX_ZHOPIN, iPar, 2, 0, 0);
+
+    /* Ncmp=3:21   -->  ConstL */
+    iPar[0]=0; 
+    RPXaddCmpDSP(dn, 2, RPX_CONSTL, iPar, 1, 0, 0);
+
+    /* Ncmp=3:22  [ RiseEdge ] -->  EdgeDetect */
+    iPar[0]=0; 
+    RPXaddCmpDSP(dn, 2, RPX_EDGEDETECT, iPar, 1, 0, 0);
+
+    /* Ncmp=3:23  -->  SigPatch  */
+    iPar[0]=DSP_3+21; iPar[1]=RPX_OUTVAL;  
+    RPXaddCmpDSP(dn, 2, RPX_SIGPATCH, iPar, 2, 0, 0);
+
+    /* Ncmp=3:24  [ FallEdge ] -->  EdgeDetect */
+    iPar[0]=1; 
+    RPXaddCmpDSP(dn, 2, RPX_EDGEDETECT, iPar, 1, 0, 0);
+
+    /* Ncmp=3:25  [ TrgOr ] -->  Or */
+    iPar[1]=(3:22); iPar[2]=(3:24); iPar[0]=2; 
+    RPXaddCmpDSP(dn, 2, RPX_OR, iPar, 3, 0, 0);
+
+    /* Ncmp=3:26  -->  ParFeed  */
+    iPar[0]=DSP_3+30; iPar[1]=RPX_PAR3;  
+    RPXaddCmpDSP(dn, 2, RPX_PARFEED, iPar, 2, 0, 0);
+
+    /* Ncmp=3:27  -->  ParFeed  */
+    iPar[0]=DSP_3+32; iPar[1]=RPX_PAR3;  
+    RPXaddCmpDSP(dn, 2, RPX_PARFEED, iPar, 2, 0, 0);
+
+    /* Ncmp=3:28   -->  ConstF */
+    fPar[0]=1.0f; 
+    RPXaddCmpDSP(dn, 2, RPX_CONSTF, iPar, 1, 0, 0);
+
+    /* Ncmp=3:29  [  ] -->  Float2Float */
+    RPXaddCmpDSP(dn, 2, RPX_FLOAT2FLOAT, iPar, 0, 0, 0);
+
+    /* Ncmp=3:30  [ EpocRam ] -->  SerStore */
+    iPar[0]=10000; iPar[1]=0; iPar[2]=1; iPar[3]=0; 
+    RPXaddCmpDSP(dn, 2, RPX_SERSTORE, iPar, 4, 0, 0);
+
+    /* Ncmp=3:31  [ iTime ] -->  zHopIn */
+    iPar[0]=0; iPar[1]=3; 
+    RPXaddCmpDSP(dn, 2, RPX_ZHOPIN, iPar, 2, 0, 0);
+
+    /* Ncmp=3:32  [ EpocRamT ] -->  SerStore */
+    iPar[0]=10000; iPar[1]=0; iPar[2]=1; iPar[3]=0; 
+    RPXaddCmpDSP(dn, 2, RPX_SERSTORE, iPar, 4, 0, 0);
+
+    return getZ3err(0);
+}
