@@ -58,14 +58,29 @@ function BehavioralMain(app)
             
             % --- 2a. Update mdb for the current word ---
             [~, ~, file_ext] = fileparts(filePath);
-            audio_info = audioinfo(filePath);
             
-            mdb.TX1.stimulus.speech.source = filePath;
-            mdb.TX1.stimulus.burstDuration = audio_info.Duration;
+            % --- Create Padded Word File ---
+            padding_sec = 0.2; % 200ms padding
+            [y_word, fs_word] = audioread(filePath);
+            if size(y_word, 2) > 1; y_word = y_word(:,1); end % Ensure mono
+            
+            padding_samps = round(padding_sec * fs_word);
+            silence = zeros(padding_samps, size(y_word, 2));
+            
+            y_word_padded = [silence; y_word; silence];
+            
+            temp_word_file = fullfile(tempdir, ['padded_word_' fileName]);
+            audiowrite(temp_word_file, y_word_padded, fs_word);
+            
+            new_duration = length(y_word_padded) / fs_word;
+
+            % Update TX1 to use the padded file
+            mdb.TX1.stimulus.speech.source = temp_word_file;
+            mdb.TX1.stimulus.burstDuration = new_duration;
             
             if use_custom_noise
-                % Calculate samples needed for the noise to match word duration
-                samples_needed = ceil(audio_info.Duration * fs_noise_master);
+                % Calculate samples needed for the noise to match the NEW padded word duration
+                samples_needed = ceil(new_duration * fs_noise_master);
                 
                 if total_noise_samples > samples_needed
                     % Pick a random start point
@@ -98,10 +113,10 @@ function BehavioralMain(app)
                 mdb.TX2.stimulus.speech.amp = mdb.TX2.stimulus.noise.amp;
                 
                 % Set duration
-                mdb.TX2.stimulus.burstDuration = audio_info.Duration;
+                mdb.TX2.stimulus.burstDuration = new_duration;
             else
                 % Standard Noise Mode (White/NB)
-                mdb.TX2.stimulus.burstDuration = audio_info.Duration;
+                mdb.TX2.stimulus.burstDuration = new_duration;
             end
 
             mdb.TX1.stimulus.speech.file_ext = file_ext;
@@ -111,8 +126,7 @@ function BehavioralMain(app)
             
             % --- 2c. Play the sound ---
             play_signal_multi(mdb.master.TX1_select, mdb.master.TX2_select, mdb.master.TX3_select);
-            pause(audio_info.Duration + 0.2); % Pause for the duration of the audio + a small buffer
-            TXall_stop_signal();
+            pause(new_duration + 0.2); % Pause for the duration of the audio + a small buffer
             
             % --- 2d. Handle Interactive Mode ---
             pass_fail_status = 'N/A';
