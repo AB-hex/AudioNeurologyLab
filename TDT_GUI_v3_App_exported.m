@@ -57,6 +57,7 @@ classdef TDT_GUI_v3_App_exported < matlab.apps.AppBase
         InputSignal1TX1DropDown         matlab.ui.control.DropDown
         InputSignal1TX1DropDownLabel    matlab.ui.control.Label
         BehaviorualTab                  matlab.ui.container.Tab
+        ChooseFolderButton_Behavioral_2  matlab.ui.control.Button
         CheckBox_Behavioral             matlab.ui.control.CheckBox
         ModesDropDown_Behavioral        matlab.ui.control.DropDown
         ModesDropDownLabel              matlab.ui.control.Label
@@ -889,7 +890,7 @@ classdef TDT_GUI_v3_App_exported < matlab.apps.AppBase
 
         % Button pushed function: ChooseFolderButton_Behavioral
         function ChooseFolderButton_BehavioralPushed(app, event)
-              app.ChooseFolderButton_Behavioral.Text =  uigetdir('C:\Users\Lab\Documents\Shaden CVC words');
+              app.ChooseFolderButton_Behavioral.Text =  uigetdir('C:\Users\Lab\Documents\CVC Words\Testing');
               app.Panel.Enable = 'on';
         end
 
@@ -903,10 +904,10 @@ classdef TDT_GUI_v3_App_exported < matlab.apps.AppBase
             
             catch e
                 app.StartButton_Behavioral.Enable = "on";
-                fprintf(2, 'Error occurred: %s\n', e.message);
-                for i = 1:length(e.stack)
-                    fprintf(2, 'File: %s, Name: %s, Line: %d\n', e.stack(i).file, e.stack(i).name, e.stack(i).line);
-                end
+                 fprintf(2, 'Error occurred: %s\n', e.message);
+                 for i = 1:length(e.stack)                                                                          
+                     fprintf(2, 'File: %s, Name: %s, Line: %d\n', e.stack(i).file, e.stack(i).name, e.stack(i).line);  
+                 end
             end
 
         end
@@ -917,11 +918,19 @@ classdef TDT_GUI_v3_App_exported < matlab.apps.AppBase
             if strcmp(value,"Noise - 0 or 90")
                 app.NoisedBEditField_2.Visible = "on";
                 app.NoiseOutputSelectionPanel_2.Visible = "on";
+                app.ChooseFolderButton_Behavioral_2.Visible = "on";
             else
                 app.NoisedBEditField_2.Visible = "off";
                 app.NoiseOutputSelectionPanel_2.Visible = "off"; 
+                app.ChooseFolderButton_Behavioral_2.Visible = "off";
 
             end
+        end
+
+        % Button pushed function: ChooseFolderButton_Behavioral_2
+        function ChooseFolderButton_Behavioral_2Pushed(app, event)
+            app.ChooseFolderButton_Behavioral.Text =  uigetfile('C:\Users\Lab\Documents\Noise\*.*');
+
         end
     end
 
@@ -1603,6 +1612,13 @@ classdef TDT_GUI_v3_App_exported < matlab.apps.AppBase
             app.CheckBox_Behavioral = uicheckbox(app.BehaviorualTab);
             app.CheckBox_Behavioral.Text = 'Stop after each word';
             app.CheckBox_Behavioral.Position = [444 543 141 25];
+
+            % Create ChooseFolderButton_Behavioral_2
+            app.ChooseFolderButton_Behavioral_2 = uibutton(app.BehaviorualTab, 'push');
+            app.ChooseFolderButton_Behavioral_2.ButtonPushedFcn = createCallbackFcn(app, @ChooseFolderButton_Behavioral_2Pushed, true);
+            app.ChooseFolderButton_Behavioral_2.Visible = 'off';
+            app.ChooseFolderButton_Behavioral_2.Position = [635 535 181 40];
+            app.ChooseFolderButton_Behavioral_2.Text = 'Choose Noise Soruce';
 
             % Create SNRFinderTab
             app.SNRFinderTab = uitab(app.TabGroup);

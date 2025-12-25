@@ -6,7 +6,7 @@ function BehavioralMain(app)
     load mdb.mat;
 
     % --- DEBUGGING LINE ---
-    disp(['[DEBUG] Interactive mode flag from mdb.mat is: ', num2str(mdb.behavioral.interactive)]);
+    % disp(['[DEBUG] Interactive mode flag from mdb.mat is: ', num2str(mdb.behavioral.interactive)]);
 
     % Check if a behavioral experiment is configured
     if isfield(mdb, 'behavioral') && isfield(mdb.behavioral, 'mode')
@@ -38,6 +38,9 @@ function BehavioralMain(app)
         % --- 2. Main Experiment Loop ---
         results = {}; % Initialize results cell array
         noise_active = isfield(mdb, 'master') && mdb.master.TX2_select;
+        
+        % Check for custom noise file
+        use_custom_noise = isfield(mdb, 'behavioral') && isfield(mdb.behavioral, 'noiseFilePath');
 
         for i = 1:length(filesToPlay)
             fileName = filesToPlay{i}.name;
@@ -46,23 +49,29 @@ function BehavioralMain(app)
             % --- 2a. Update mdb for the current word ---
             [~, ~, file_ext] = fileparts(filePath);
             audio_info = audioinfo(filePath);
+            
             mdb.TX1.stimulus.speech.source = filePath;
-            mdb.TX1.stimulus.speech.file_ext = file_ext;
             mdb.TX1.stimulus.burstDuration = audio_info.Duration;
-            mdb.TX2.stimulus.burstDuration = audio_info.Duration;
             
-            % --- 2b. Set Noise Phase if noise is active ---
-            noise_phase = 'N/A';
-            if noise_active
-                if randi([0, 1]) == 0
-                    mdb.TX2.stimulus.noise.phase = 0;
-                    noise_phase = 0;
-                else
-                    mdb.TX2.stimulus.noise.phase = 90;
-                    noise_phase = 90;
-                end
+            if use_custom_noise
+                % Use custom noise file in 'Speech' mode on TX2 (similar to SNRFinder)
+                mdb.TX2.stimulus.stimulusSelect.noise = 0;
+                mdb.TX2.stimulus.stimulusSelect.speech = 1;
+                mdb.TX2.stimulus.speech.source = mdb.behavioral.noiseFilePath;
+                
+                % Use the noise amplitude set in the GUI
+                mdb.TX2.stimulus.speech.amp = mdb.TX2.stimulus.noise.amp;
+                
+                % Set duration (Note: This will play the noise file from the start for the duration of the word)
+                mdb.TX2.stimulus.burstDuration = audio_info.Duration;
+            else
+                % Standard Noise Mode (White/NB)
+                mdb.TX2.stimulus.burstDuration = audio_info.Duration;
             end
+
+            mdb.TX1.stimulus.speech.file_ext = file_ext;
             
+
             save('mdb.mat', 'mdb'); % Save mdb with updated file path and phase
             
             % --- 2c. Play the sound ---
@@ -89,7 +98,7 @@ function BehavioralMain(app)
             
             % --- 2e. Record Results for this trial ---
             results{i, 1} = fileName;
-            results{i, 2} = noise_phase;
+            results{i, 2} = 0;
             results{i, 3} = pass_fail_status;
         end
         

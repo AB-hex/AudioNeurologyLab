@@ -41,9 +41,23 @@ function PrepareBehavioralMdb(app)
     if strcmp(mdb.behavioral.mode, 'Noise - 0 or 90')
         % --- Channel 2 (TX2) Configuration for Noise ---
         mdb.TX2.stimulus.stimulusSelect.pureTone = 0;
-        mdb.TX2.stimulus.stimulusSelect.noise = 1; % White Noise
+        mdb.TX2.stimulus.stimulusSelect.noise = 1; % White Noise (Default)
         mdb.TX2.stimulus.stimulusSelect.speech = 0;
         mdb.TX2.stimulus.noise.amp = app.NoisedBEditField_2.Value;
+        
+        % Check for custom noise file
+        noiseFile = app.ChooseFolderButton_Behavioral_2.Text;
+        if ~strcmp(noiseFile, 'Choose Noise Soruce') && exist(noiseFile, 'file')
+            mdb.behavioral.noiseFilePath = noiseFile;
+            mdb.TX2.stimulus.stimulusSelect.noise = 0;
+            mdb.TX2.stimulus.stimulusSelect.speech = 1;
+            % Note: We don't set TX2 source to 3 here yet; we'll handle the segment generation in BehavioralMain
+        else
+            if isfield(mdb.behavioral, 'noiseFilePath')
+                mdb.behavioral = rmfield(mdb.behavioral, 'noiseFilePath');
+            end
+             mdb.TX2.stimulus.noise.source = 1; % Revert to White Noise if no file
+        end
 
         selectedSpeakers_TX2 = [];
         for i = 1:8

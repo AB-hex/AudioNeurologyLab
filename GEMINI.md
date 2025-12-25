@@ -77,8 +77,6 @@ Sources:
 
 ## TTankX ActiveX Control Methods
 
-## TTankX ActiveX Control Methods
-
 Below is a list of methods available for the `COM.TTank_X` ActiveX object in MATLAB.
 
 ```
@@ -134,7 +132,8 @@ The `mdb.mat` file contains a structure named `mdb` (Master Database) that serve
     *   `GainTable`: Frequency-dependent gain adjustments for flat response.
     *   `reference`: Baseline dB level (e.g., 70).
 *   **Behavioral Logic (`behavioral`)**:
-    *   `folderPath`: Directory containing stimulus files.
+    *   `folderPath`: Directory containing stimulus (word) files.
+    *   `noiseFilePath`: Path to a custom noise audio file.
     *   `patient`: Participant metadata.
     *   `output`: Results directory.
 
@@ -142,7 +141,11 @@ The `mdb.mat` file contains a structure named `mdb` (Master Database) that serve
 
 1.  **Preparation**: GUI updates `mdb` with user settings (e.g., patient info, start levels) and saves `mdb.mat`.
 2.  **Loop**: Experiment script (e.g., `BehavioralMain.m`, `SNRFinderHelper.m`) iterates through trials.
-    *   Updates `mdb` with current trial parameters (e.g., specific .wav file path, current SNR level).
+    *   **Speech (TX1)**: Updates `mdb.TX1.stimulus.speech.source` with the current word path.
+    *   **Noise (TX2)**: 
+        *   If a custom noise file is provided, TX2 is switched to `speech` mode (`stimulusSelect.speech = 1`, `noise = 0`) and `mdb.TX2.stimulus.speech.source` is set to the noise file path.
+        *   The amplitude is set from the GUI's noise level setting.
+    *   **Synchronization**: `burstDuration` is updated across all active channels to match the primary stimulus duration, ensuring consistent 'Single' playback mode.
     *   Saves `mdb.mat`.
 3.  **Signal Creation**: `play_signal_multi.m` loads `mdb.mat`.
     *   Calls `TX1_create_signal.m` (and TX2/TX3 versions).
