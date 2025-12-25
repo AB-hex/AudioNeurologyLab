@@ -19,7 +19,7 @@ function BehavioralMain(app)
         expression = '^(\d+)\s-\s.*\.wav$';
         filesToPlay = {};
         for i = 1:length(fileList)
-            [tokens, ~] = regexp(fileList(i).name, expression, 'tokens', 'match');
+             [tokens, ~] = regexp(fileList(i).name, expression, 'tokens', 'match');
             if ~isempty(tokens)
                 order = str2double(tokens{1}{1});
                 filesToPlay{end+1} = struct('name', fileList(i).name, 'order', order);
@@ -92,6 +92,8 @@ function BehavioralMain(app)
         end
         
         % --- 3. Generate and Save Report ---
+        
+        outputDir = fullfile(mdb.behavioral.output.folder, mdb.behavioral.output.fileName);
         
         % Create the output directory if it doesn't exist
         if ~exist(outputDir, 'dir')

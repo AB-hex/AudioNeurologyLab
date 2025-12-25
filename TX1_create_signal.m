@@ -41,7 +41,7 @@ function  [TX1_signal,playMode] = TX1_create_signal( )
     pureTonePhase = mdb.TX1.stimulus.PT.phase;
 
     % speech parameters
-    speechSource =  mdb.TX1.stimulus.speech.file;
+    speechSource =  mdb.TX1.stimulus.speech.source;
     speechAmp = mdb.TX1.stimulus.speech.amp;  
     speechPhase = mdb.TX1.stimulus.speech.phase;
 

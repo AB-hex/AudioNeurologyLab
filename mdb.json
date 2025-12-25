@@ -1,0 +1,447 @@
+{
+  "TX1": {
+    "transducer": {
+      "FF": {
+        "DacVector": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "source": "FF",
+      "AC": {
+        "outputVector": [
+          0,
+          0
+        ]
+      },
+      "BC": {
+        "outputVector": [
+          0,
+          0
+        ]
+      }
+    },
+    "stimulus": {
+      "stimulusSelect": {
+        "noise": 0,
+        "pureTone": 0,
+        "speech": 1
+      },
+      "PT": {
+        "modulationType": 3,
+        "amp": 35,
+        "freq": 1000,
+        "modDepth": 100,
+        "modFreq": 10,
+        "modIndex": 1,
+        "phase": 0
+      },
+      "speech": {
+        "amp": 60,
+        "phase": 0,
+        "source": "",
+        "file": "C:\\Users\\Lab\\Documents\\CVC Words\\Testing\\31 - אגרוף.wav",
+        "file_ext": ".wav"
+      },
+      "burstDuration": 0,
+      "noise": {
+        "NBCntrFrq": 1000,
+        "NBBW": 100,
+        "amp": 30,
+        "source": 1,
+        "phase": 0,
+        "fileName": 0
+      },
+      "onset": 0,
+      "offset": 0
+    }
+  },
+  "main": {
+    "transducer": {
+      "newSource": "NULL",
+      "BC": {
+        "newOutputVector": [
+          0,
+          0
+        ]
+      },
+      "AC": {
+        "newOutputVector": [
+          0,
+          0
+        ]
+      },
+      "FF": {
+        "newDacVector": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    }
+  },
+  "TX2": {
+    "transducer": {
+      "source": "FF",
+      "FF": {
+        "DacVector": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "AC": {
+        "outputVector": 0
+      },
+      "BC": {
+        "outputVector": 0
+      }
+    },
+    "stimulus": {
+      "burstDuration": 0,
+      "noise": {
+        "source": 1,
+        "NBCntrFrq": 1000,
+        "NBBW": 100,
+        "amp": 30,
+        "phase": 0,
+        "fileName": 0
+      },
+      "stimulusSelect": {
+        "noise": 0,
+        "speech": 0,
+        "pureTone": 0
+      },
+      "PT": {
+        "modDepth": 100,
+        "modIndex": 1,
+        "modulationType": 3,
+        "modFreq": 10,
+        "amp": 35,
+        "freq": 1000,
+        "phase": 0
+      },
+      "speech": {
+        "amp": 30,
+        "phase": 0,
+        "source": ""
+      },
+      "onset": 0,
+      "offset": 0
+    }
+  },
+  "TX3": {
+    "transducer": {
+      "source": "FF",
+      "FF": {
+        "DacVector": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "AC": {
+        "outputVector": 0
+      },
+      "BC": {
+        "outputVector": 0
+      }
+    },
+    "stimulus": {
+      "burstDuration": 0,
+      "noise": {
+        "source": 1,
+        "NBCntrFrq": 1000,
+        "NBBW": 100,
+        "amp": 30,
+        "phase": 0,
+        "fileName": 0
+      },
+      "stimulusSelect": {
+        "noise": 0,
+        "speech": 0,
+        "pureTone": 0
+      },
+      "PT": {
+        "modDepth": 100,
+        "modIndex": 1,
+        "modulationType": 3,
+        "modFreq": 10,
+        "amp": 35,
+        "freq": 1000,
+        "phase": 0
+      },
+      "speech": {
+        "amp": 30,
+        "phase": 0,
+        "source": ""
+      },
+      "onset": 0,
+      "offset": 0
+    }
+  },
+  "master": {
+    "TX1_select": 1,
+    "TX2_select": 0,
+    "TX3_select": 0,
+    "TX1_playMode": 1,
+    "TX2_playMode": 1,
+    "TX3_playMode": 1
+  },
+  "Calibration": {
+    "SpeakersGain": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "FF2SpeakerMap": [
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+    ],
+    "GainTable": [
+      {
+        "x250Hz": 12,
+        "x500Hz": 13,
+        "x1000Hz": 1,
+        "x2000Hz": 1,
+        "x4000Hz": 1,
+        "Noise": 2
+      },
+      {
+        "x250Hz": 13,
+        "x500Hz": 14,
+        "x1000Hz": 4,
+        "x2000Hz": 2,
+        "x4000Hz": -2,
+        "Noise": 1
+      },
+      {
+        "x250Hz": 17,
+        "x500Hz": 20,
+        "x1000Hz": 1,
+        "x2000Hz": -1,
+        "x4000Hz": 2,
+        "Noise": 1
+      },
+      {
+        "x250Hz": 17,
+        "x500Hz": 9,
+        "x1000Hz": 9,
+        "x2000Hz": 2,
+        "x4000Hz": 1,
+        "Noise": 6
+      },
+      {
+        "x250Hz": 1,
+        "x500Hz": 1,
+        "x1000Hz": 1,
+        "x2000Hz": 1,
+        "x4000Hz": 1,
+        "Noise": 1
+      },
+      {
+        "x250Hz": 23,
+        "x500Hz": 8,
+        "x1000Hz": 5,
+        "x2000Hz": 12,
+        "x4000Hz": 12,
+        "Noise": 6
+      },
+      {
+        "x250Hz": 15,
+        "x500Hz": 13,
+        "x1000Hz": 3,
+        "x2000Hz": 1,
+        "x4000Hz": 6,
+        "Noise": 4
+      },
+      {
+        "x250Hz": 13,
+        "x500Hz": 14,
+        "x1000Hz": 5,
+        "x2000Hz": 3,
+        "x4000Hz": 1,
+        "Noise": 3
+      },
+      {
+        "x250Hz": 1,
+        "x500Hz": 1,
+        "x1000Hz": 1,
+        "x2000Hz": 1,
+        "x4000Hz": 1,
+        "Noise": 1
+      },
+      {
+        "x250Hz": 7,
+        "x500Hz": 7,
+        "x1000Hz": 8,
+        "x2000Hz": 1,
+        "x4000Hz": 1,
+        "Noise": 4
+      },
+      {
+        "x250Hz": 12,
+        "x500Hz": 5,
+        "x1000Hz": 1,
+        "x2000Hz": 2,
+        "x4000Hz": 1,
+        "Noise": 1
+      },
+      {
+        "x250Hz": 8,
+        "x500Hz": 5,
+        "x1000Hz": -2,
+        "x2000Hz": -2,
+        "x4000Hz": 2,
+        "Noise": 2
+      },
+      {
+        "x250Hz": 14,
+        "x500Hz": 3,
+        "x1000Hz": -1,
+        "x2000Hz": 1,
+        "x4000Hz": 3,
+        "Noise": 1
+      },
+      {
+        "x250Hz": 18,
+        "x500Hz": 10,
+        "x1000Hz": 1,
+        "x2000Hz": 1,
+        "x4000Hz": 3,
+        "Noise": 5
+      },
+      {
+        "x250Hz": 11,
+        "x500Hz": 5,
+        "x1000Hz": 2,
+        "x2000Hz": 1,
+        "x4000Hz": 1,
+        "Noise": 3
+      },
+      {
+        "x250Hz": 8,
+        "x500Hz": 5,
+        "x1000Hz": 1,
+        "x2000Hz": 3,
+        "x4000Hz": 12,
+        "Noise": 3
+      },
+      {
+        "x250Hz": 12,
+        "x500Hz": 5,
+        "x1000Hz": 4,
+        "x2000Hz": 5,
+        "x4000Hz": 1,
+        "Noise": 4
+      },
+      {
+        "x250Hz": 15,
+        "x500Hz": 6,
+        "x1000Hz": 4,
+        "x2000Hz": 4,
+        "x4000Hz": 8,
+        "Noise": 8
+      }
+    ],
+    "reference": 70
+  },
+  "behavioral": {
+    "mode": "Baseline - quite",
+    "interactive": false,
+    "folderPath": "C:\\Users\\Lab\\Documents\\CVC Words\\Testing",
+    "patient": {
+      "name": "A",
+      "age": "a",
+      "gender": "A",
+      "ear": "a",
+      "testName": "a"
+    },
+    "output": {
+      "folder": "C:\\Users\\Lab\\Documents",
+      "fileName": "A"
+    }
+  }
+}

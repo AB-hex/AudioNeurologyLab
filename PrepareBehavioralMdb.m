@@ -71,4 +71,4 @@ function PrepareBehavioralMdb(app)
     % Save the updated mdb structure back to mdb.mat
     save('mdb.mat', 'mdb');
 
-end
+    end

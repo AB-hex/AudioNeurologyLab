@@ -77,6 +77,8 @@ Sources:
 
 ## TTankX ActiveX Control Methods
 
+## TTankX ActiveX Control Methods
+
 Below is a list of methods available for the `COM.TTank_X` ActiveX object in MATLAB.
 
 ```
@@ -108,3 +110,42 @@ FancyTime              GetSortCondition       RemoveServer           SetRefEpocV
 FromTTD                GetSortName            RemoveTank             SetRefTime             unregisterevent
 GetClientID            GetStatus              ReplaceNote            SetUseSortName
 ```
+
+## Configuration Structure (mdb.mat)
+
+The `mdb.mat` file contains a structure named `mdb` (Master Database) that serves as the central configuration state for the experiment. It bridges the MATLAB GUI and the TDT hardware.
+
+### Structure Overview
+
+*   **Signal Channels (`TX1`, `TX2`, `TX3`)**: Independent signal generators.
+    *   **`transducer`**: Routes audio to specific outputs.
+        *   `DacVector`: Boolean array (1-18) mapping to physical speakers.
+        *   `source`: Output type (e.g., 'FF' for Free Field speakers).
+    *   **`stimulus`**: Defines the audio content.
+        *   `stimulusSelect`: Boolean flags for `speech`, `noise`, `pureTone`.
+        *   `speech`: Contains `source` (path to .wav), `amp` (dB), and `phase`.
+        *   `burstDuration`: Duration of the stimulus in seconds. Essential for determining playback mode (0 = Continuous, >0 = Single Shot).
+        *   `noise` / `PT`: Parameters for synthetic sounds (Freq, Amp, Modulation).
+*   **Master Control (`master`)**:
+    *   `TX1_select`, `TX2_select`, `TX3_select`: Global enable/disable switches for channels.
+    *   `TX_playMode`: Playback mode (1 = Single Shot, 0 = Continuous).
+*   **Calibration (`Calibration`)**:
+    *   `FF2SpeakerMap`: Maps logical channels (1-8) to physical hardware ports.
+    *   `GainTable`: Frequency-dependent gain adjustments for flat response.
+    *   `reference`: Baseline dB level (e.g., 70).
+*   **Behavioral Logic (`behavioral`)**:
+    *   `folderPath`: Directory containing stimulus files.
+    *   `patient`: Participant metadata.
+    *   `output`: Results directory.
+
+### Experiment Workflow
+
+1.  **Preparation**: GUI updates `mdb` with user settings (e.g., patient info, start levels) and saves `mdb.mat`.
+2.  **Loop**: Experiment script (e.g., `BehavioralMain.m`, `SNRFinderHelper.m`) iterates through trials.
+    *   Updates `mdb` with current trial parameters (e.g., specific .wav file path, current SNR level).
+    *   Saves `mdb.mat`.
+3.  **Signal Creation**: `play_signal_multi.m` loads `mdb.mat`.
+    *   Calls `TX1_create_signal.m` (and TX2/TX3 versions).
+    *   These functions read the `source` path and `amp` from `mdb` to generate digital samples.
+4.  **Hardware Interaction**: `play_signal_multi.m` uploads samples and speaker selection (`DacVector`) to the TDT hardware via ActiveX.
+5.  **Trigger**: System triggers playback and waits for duration.

@@ -19,7 +19,7 @@ function BehavioralMain(app)
         expression = '^(\d+)\s-\s.*\.wav$';
         filesToPlay = {};
         for i = 1:length(fileList)
-            [tokens, ~] = regexp(fileList(i).name, expression, 'tokens', 'match');
+               [tokens, ~] = regexp(fileList(i).name, expression, 'tokens', 'match');
             if ~isempty(tokens)
                 order = str2double(tokens{1}{1});
                 filesToPlay{end+1} = struct('name', fileList(i).name, 'order', order);
@@ -46,8 +46,10 @@ function BehavioralMain(app)
             % --- 2a. Update mdb for the current word ---
             [~, ~, file_ext] = fileparts(filePath);
             audio_info = audioinfo(filePath);
-            mdb.TX1.stimulus.speech.file = filePath;
+            mdb.TX1.stimulus.speech.source = filePath;
             mdb.TX1.stimulus.speech.file_ext = file_ext;
+            mdb.TX1.stimulus.burstDuration = audio_info.Duration;
+            mdb.TX2.stimulus.burstDuration = audio_info.Duration;
             
             % --- 2b. Set Noise Phase if noise is active ---
             noise_phase = 'N/A';
