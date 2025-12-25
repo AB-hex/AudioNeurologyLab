@@ -41,6 +41,16 @@ function BehavioralMain(app)
         
         % Check for custom noise file
         use_custom_noise = isfield(mdb, 'behavioral') && isfield(mdb.behavioral, 'noiseFilePath');
+        if use_custom_noise
+            try
+                noise_info = audioinfo(mdb.behavioral.noiseFilePath);
+                fs_noise_master = noise_info.SampleRate;
+                total_noise_samples = noise_info.TotalSamples;
+            catch
+                uialert(app.UIFigure, 'Failed to read custom noise file info. Reverting to standard noise.', 'File Error');
+                use_custom_noise = false;
+            end
+        end
 
         for i = 1:length(filesToPlay)
             fileName = filesToPlay{i}.name;
@@ -54,15 +64,40 @@ function BehavioralMain(app)
             mdb.TX1.stimulus.burstDuration = audio_info.Duration;
             
             if use_custom_noise
+                % Calculate samples needed for the noise to match word duration
+                samples_needed = ceil(audio_info.Duration * fs_noise_master);
+                
+                if total_noise_samples > samples_needed
+                    % Pick a random start point
+                    start_sample = randi(total_noise_samples - samples_needed + 1);
+                    range = [start_sample, start_sample + samples_needed - 1];
+                    [y_noise_segment, ~] = audioread(mdb.behavioral.noiseFilePath, range);
+                else
+                    % Noise file is too short, read all and loop
+                    [y_noise_full, ~] = audioread(mdb.behavioral.noiseFilePath);
+                    repeats = ceil(samples_needed / total_noise_samples);
+                    y_noise_segment = repmat(y_noise_full, repeats, 1);
+                    y_noise_segment = y_noise_segment(1:samples_needed, :);
+                end
+                
+                % Ensure mono
+                if size(y_noise_segment, 2) > 1
+                    y_noise_segment = y_noise_segment(:, 1);
+                end
+                
+                % Write segment to temp file
+                temp_noise_file = fullfile(tempdir, ['temp_noise_segment_' fileName]);
+                audiowrite(temp_noise_file, y_noise_segment, fs_noise_master);
+
                 % Use custom noise file in 'Speech' mode on TX2 (similar to SNRFinder)
                 mdb.TX2.stimulus.stimulusSelect.noise = 0;
                 mdb.TX2.stimulus.stimulusSelect.speech = 1;
-                mdb.TX2.stimulus.speech.source = mdb.behavioral.noiseFilePath;
+                mdb.TX2.stimulus.speech.source = temp_noise_file;
                 
                 % Use the noise amplitude set in the GUI
                 mdb.TX2.stimulus.speech.amp = mdb.TX2.stimulus.noise.amp;
                 
-                % Set duration (Note: This will play the noise file from the start for the duration of the word)
+                % Set duration
                 mdb.TX2.stimulus.burstDuration = audio_info.Duration;
             else
                 % Standard Noise Mode (White/NB)
