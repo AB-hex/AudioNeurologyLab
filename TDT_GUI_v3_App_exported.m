@@ -890,13 +890,13 @@ classdef TDT_GUI_v3_App_exported < matlab.apps.AppBase
 
         % Button pushed function: ChooseFolderButton_Behavioral
         function ChooseFolderButton_BehavioralPushed(app, event)
-              app.ChooseFolderButton_Behavioral.Text =  uigetdir('C:\Users\Lab\Documents\CVC Words\Testing');
+              app.ChooseFolderButton_Behavioral.Text =  uigetdir('C:\Users\Lab\Documents\CVC Words\Testing\');
               app.Panel.Enable = 'on';
         end
 
         % Button pushed function: StartButton_Behavioral
         function StartButton_BehavioralPushed(app, event)
-            app.StartButton_Behavioral.Enable = "off"
+            % app.StartButton_Behavioral.Enable = "off"
             try
             PrepareBehavioralMdb(app)
             BehavioralMain(app)
@@ -929,7 +929,8 @@ classdef TDT_GUI_v3_App_exported < matlab.apps.AppBase
 
         % Button pushed function: ChooseFolderButton_Behavioral_2
         function ChooseFolderButton_Behavioral_2Pushed(app, event)
-            app.ChooseFolderButton_Behavioral.Text =  uigetfile('C:\Users\Lab\Documents\Noise\*.*');
+            [name,location] = uigetfile('C:\Users\Lab\Documents\Noise\*.wav');
+            app.ChooseFolderButton_Behavioral_2.Text = fullfile(location,name)
 
         end
     end

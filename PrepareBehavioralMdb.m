@@ -38,7 +38,8 @@ function PrepareBehavioralMdb(app)
     mdb.TX1.transducer.FF.DacVector(selectedSpeakers_TX1) = 1;
     
     % --- Handle Different Modes ---
-    if strcmp(mdb.behavioral.mode, 'Noise - 0 or 90')
+    noiseModes = {'Noise - 0 or 90', 'Noise - 0 or 90 - EEG'};
+    if ismember(mdb.behavioral.mode, noiseModes)
         % --- Channel 2 (TX2) Configuration for Noise ---
         mdb.TX2.stimulus.stimulusSelect.pureTone = 0;
         mdb.TX2.stimulus.stimulusSelect.noise = 1; % White Noise (Default)

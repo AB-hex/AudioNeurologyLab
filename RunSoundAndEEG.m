@@ -1,90 +1,206 @@
-function [eegData, eegSampleRate] = RunSoundAndEEG(soundSignal, circuitPath)
-% This function triggers a sound and simultaneously records EEG data for a
-% specified duration, then downloads the EEG data.
+function [eegData, eegSampleRate, btnData, btnSampleRate] = RunSoundAndEEG(soundSignal, circuitPath, tankPath)
+% RunSoundAndEEG  Play a sound and record EEG + button box via OpenWorkbench/TTank.
 %
 % Parameters:
-%   soundSignal: The sound waveform to play (a vector of numbers).
-%   circuitPath: The absolute path to the .rcx file configured for sound and EEG.
+%   soundSignal: Sound waveform vector (row or column).
+%   circuitPath: Unused — kept for interface compatibility with old callers.
+%   tankPath:    (optional) Tank directory. Defaults to .\Tanks\
 %
 % Returns:
-%   eegData: A matrix of the recorded EEG data.
-%   eegSampleRate: The sampling rate of the EEG data.
+%   eegData:       [samples x 4] EEG matrix.
+%   eegSampleRate: EEG sampling rate in Hz  (RA16_1).
+%   btnData:       [samples x 4] Button box matrix.
+%   btnSampleRate: Button sampling rate in Hz (RX8_1).
+%
+% Build time axes with:
+%   eegTime = (0:size(eegData,1)-1) / eegSampleRate;
+%   btnTime = (0:size(btnData,1)-1) / btnSampleRate;
 
-% --- 1. Constants and Setup ---
-RECORD_DURATION_S = 10; % Duration to record EEG in seconds.
-SOUND_BUFFER_TAG = 'datain1';
-EEG_BUFFER_TAG = 'EEGData';
-EEG_INDEX_TAG = 'EEGIndex';
-START_TRIGGER = 1; % Software trigger to start sound and EEG
-STOP_TRIGGER = 9;  % Software trigger to stop everything
+% --- 1. Configuration ---
+TDEV_SDK_PATH = 'C:\TDT\TDTMatlabSDK\TDTSDK\OpenExLive';
+RECORD_DURATION_S = 5;
+SOUND_DEVICE  = 'RX8_1';
+EEG_DEVICE    = 'RA16_1';
+EEG_STORE_ID  = 'EEG0';
+BTN_STORE_ID  = 'BTTN';
 
-% --- 2. Connect to Hardware and Load Circuit ---
-% This uses your existing Circuit_Loader function to get the ActiveX object.
-fprintf('Loading circuit: %s...\n', circuitPath);
-RP = Circuit_Loader(circuitPath);
-if ~all(bitget(RP.GetStatus,1:3))
-    error('Failed to connect to TDT hardware or load circuit.');
-end
-fprintf('Circuit loaded successfully.\n');
-
-% Get the sampling frequency for the EEG data from the device
-eegSampleRate = RP.GetSFreq();
-max_eeg_points = floor(RECORD_DURATION_S * eegSampleRate);
-
-% --- 3. Prepare and Load Sound Stimulus ---
-sound_len = length(soundSignal);
-% Ensure buffer size in circuit is large enough for the sound signal
-RP.SetTagVal('BufSize1', sound_len);
-% Write the sound data to the buffer
-RP.WriteTagV(SOUND_BUFFER_TAG, 0, soundSignal);
-fprintf('Sound stimulus loaded.\n');
-
-% --- 4. Trigger Sound and EEG Recording ---
-fprintf('Starting sound and EEG recording for %d seconds...\n', RECORD_DURATION_S);
-RP.SoftTrg(START_TRIGGER); % Trigger number 1 starts both sound and EEG
-
-% --- 5. Wait for Recording to Finish ---
-pause(RECORD_DURATION_S);
-
-% --- 6. Stop Recording and Retrieve EEG Data ---
-fprintf('Recording finished. Downloading data...\n');
-% Optional: Trigger a stop, or just halt. Halting is simpler if stopping everything.
-% RP.SoftTrg(STOP_TRIGGER);
-
-% Get the number of points recorded from the index tag
-points_recorded = RP.GetTagVal(EEG_INDEX_TAG);
-
-% Make sure we don't try to read more points than are available
-if points_recorded > max_eeg_points
-    points_to_read = max_eeg_points;
-else
-    points_to_read = points_recorded;
+if nargin < 3 || isempty(tankPath)
+    tankPath = fullfile(pwd, 'Tanks');
 end
 
-% Read the data from the EEG buffer
-% Note: This reads a single vector. If you have multiple channels, you will
-% need to know the number of channels and reshape the vector accordingly.
-eegData_vector = RP.ReadTagV(EEG_BUFFER_TAG, 0, points_to_read);
-fprintf('%d EEG data points read.\n', points_to_read);
-
-% --- 7. Reshape Data and Cleanup ---
-% Get channel count (assuming it's exposed as a tag, otherwise it's a known number)
-% If the tag 'NumEEGChannels' doesn't exist, you must replace this with the
-% known number of channels from your Medusa setup (e.g., 32, 64).
-try
-    num_channels = RP.GetTagVal('NumEEGChannels');
-    if num_channels > 0
-        eegData = reshape(eegData_vector, [], num_channels);
+% --- 2. Connect ---
+addpath(TDEV_SDK_PATH);
+fprintf('Connecting to OpenWorkbench...\n');
+checkTD = actxserver('TDevAcc.X');
+if checkTD.ConnectServer('Local') ~= 1
+    checkTD.CloseConnection; delete(checkTD);
+    error('OpenWorkbench is not running. Start it with workbenchconfEEG.xpm first.');
+end
+devName = '';
+deadline = tic;
+while isempty(devName) && toc(deadline) < 10
+    checkTD.ConnectServer('Local');          % refresh device list — mirrors TDEV.m
+    devName = checkTD.GetDeviceName(0);
+    if isempty(devName), pause(0.1); end
+end
+curMode = checkTD.GetSysMode();
+checkTD.CloseConnection; delete(checkTD);
+if isempty(devName)
+    modeStr = {'Idle','Standby','Preview','Record'};
+    if curMode >= 1 && curMode <= 4
+        mStr = modeStr{curMode};
     else
-        eegData = eegData_vector; % Keep as a vector if channel count is 0 or 1
+        mStr = sprintf('mode %d', curMode);
     end
-catch
-    warning('Could not find \'NumEEGChannels\' tag. Returning a single vector. You may need to reshape the data manually.');
-    eegData = eegData_vector;
+    error(['No TDT devices found after 10 s (Workbench is %s). ' ...
+           'Click Standby in OpenWorkbench, wait for it to show Standby, ' ...
+           'then run this function again.'], mStr);
+end
+td = TDEV();
+fprintf('Connected. Devices: %s | Mode: %s\n', ...
+    strjoin(td.DEVICE_NAMES, ', '), td.MODES{td.mode()+1});
+
+TT = actxserver('TTank.X');
+if TT.ConnectServer('Local', 'RunSoundEEGClient') ~= 1
+    error('TTank connection failed.');
 end
 
-% Halt the processor
-RP.Halt;
-fprintf('Experiment stopped and connection halted.\n');
+try
+
+% --- 3. Tank ---
+if ~exist(tankPath, 'dir'), mkdir(tankPath); end
+td.set_tank(tankPath);
+
+% --- 4. Try to expand store buffers before going to Standby ---
+% TDT Tech Note TN0142: buffer size can be set via size~ tags at runtime.
+% Attempt it silently — if the tags don't exist it falls back to circuit defaults.
+eegSampleRate = td.TD.GetDeviceSF(EEG_DEVICE);
+btnSampleRate = td.TD.GetDeviceSF(SOUND_DEVICE);
+
+targetDuration = RECORD_DURATION_S + 2;   % add headroom
+eegBufNeeded   = ceil(targetDuration * eegSampleRate);
+btnBufNeeded   = ceil(targetDuration * btnSampleRate);
+
+try
+    td.TD.SetTargetVal([EEG_DEVICE  '.size~' EEG_STORE_ID], eegBufNeeded);
+    fprintf('EEG0 buffer set to %d samples (%.1f s)\n', eegBufNeeded, targetDuration);
+catch
+    fprintf('Note: EEG0 buffer size not adjustable via tag — using circuit default.\n');
+end
+
+try
+    td.TD.SetTargetVal([SOUND_DEVICE '.size~' BTN_STORE_ID], btnBufNeeded);
+    fprintf('BTTN buffer set to %d samples (%.1f s)\n', btnBufNeeded, targetDuration);
+catch
+    fprintf('Note: BTTN buffer size not adjustable via tag — using circuit default.\n');
+end
+
+% --- 5. Load sound ---
+soundSignal = soundSignal(:)';
+fprintf('Loading sound (%d samples)...\n', length(soundSignal));
+td.TD.SetTargetVal([SOUND_DEVICE '.BufSize1'],  length(soundSignal));
+td.TD.WriteTargetVEX([SOUND_DEVICE '.datain1'], 0, 'F32', soundSignal);
+
+% --- 6. Record ---
+fprintf('Going to Standby...\n');
+td.standby();
+fprintf('Going to Record...\n');
+td.record();
+fprintf('In Record mode.\n');
+
+if TT.OpenTank(tankPath, 'R') ~= 1
+    error('Could not open tank: %s', tankPath);
+end
+pause(0.5);
+blockName = TT.GetHotBlock();
+if isempty(blockName)
+    blockDirs = dir(fullfile(tankPath, 'Block-*'));
+    if ~isempty(blockDirs)
+        [~, idx] = max([blockDirs.datenum]);
+        blockName = blockDirs(idx).name;
+    else
+        error('Cannot determine block name.');
+    end
+end
+fprintf('Recording into block: %s\n', blockName);
+
+% --- 7. Trigger ---
+fprintf('Triggering stimulus (%d s)...\n', RECORD_DURATION_S);
+td.TD.SetTargetVal([SOUND_DEVICE '.single1'], 1);
+pause(RECORD_DURATION_S + 0.5);
+td.TD.SetTargetVal([SOUND_DEVICE '.single1'], 0);
+
+% --- 8. Stop ---
+td.idle();
+pause(1);
+
+% --- 9. Read data ---
+fprintf('Reading data from block %s...\n', blockName);
+TT.SelectBlock(['~' blockName]);
+TT.SetGlobalV('Channel', 0);
+TT.SetGlobalStringV('Options', 'ALL');
+
+eegData = TT.ReadWavesV(EEG_STORE_ID);
+if isempty(eegData) || (isscalar(eegData) && isnan(eegData))
+    warning('No EEG data in store "%s".', EEG_STORE_ID);
+    eegData = [];
+end
+
+btnData = TT.ReadWavesV(BTN_STORE_ID);
+if isempty(btnData) || (isscalar(btnData) && isnan(btnData))
+    warning('No button data in store "%s".', BTN_STORE_ID);
+    btnData = [];
+end
+
+fprintf('--- Data summary ---\n');
+fprintf('EEG:     %d samples @ %.2f Hz = %.3f s\n', size(eegData,1), eegSampleRate, size(eegData,1)/eegSampleRate);
+fprintf('Buttons: %d samples @ %.2f Hz = %.3f s\n', size(btnData,1), btnSampleRate, size(btnData,1)/btnSampleRate);
+
+% --- 10. Plot ---
+hasEEG = ~isempty(eegData);
+hasBtn = ~isempty(btnData);
+
+if hasEEG || hasBtn
+    eegChans   = 0; btnChans = 0;
+    if hasEEG, eegChans = min(4, size(eegData,2)); end
+    if hasBtn, btnChans = min(4, size(btnData,2)); end
+    totalPlots = eegChans + btnChans;
+
+    figure('Name', ['Session: ' blockName], 'Color', 'w');
+    plotIdx = 1;
+
+    if hasEEG
+        eegTime = (0:size(eegData,1)-1) / eegSampleRate;
+        for i = 1:eegChans
+            subplot(totalPlots, 1, plotIdx);
+            plot(eegTime, eegData(:,i), 'b'); ylabel(['EEG ' num2str(i)]); grid on;
+            if plotIdx == 1, title(['Block: ' blockName]); end
+            plotIdx = plotIdx + 1;
+        end
+    end
+
+    if hasBtn
+        btnTime = (0:size(btnData,1)-1) / btnSampleRate;
+        for i = 1:btnChans
+            subplot(totalPlots, 1, plotIdx);
+            plot(btnTime, btnData(:,i), 'r'); ylabel(['Btn ' num2str(i)]); grid on;
+            ylim([-0.5 1.5]);
+            plotIdx = plotIdx + 1;
+        end
+    end
+    xlabel('Time (s)');
+end
+
+catch ME
+    fprintf('ERROR: %s\n', ME.message);
+    rethrow(ME);
+end
+
+% --- 11. Cleanup ---
+TT.CloseTank;
+TT.ReleaseServer;
+try, td.idle(); catch, end
+delete(td);
+fprintf('Session complete.\n');
 
 end
