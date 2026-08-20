@@ -1,25 +1,40 @@
 function [RP,varargout] = Circuit_Loader(varargin)
-% CIRCUIT_LOADER Loads a *.rcx circuit onto a RP2, returns ActiveX control object
+% CIRCUIT_LOADER Loads a *.rcx circuit onto a RX8, returns ActiveX control object
 % RP = CIRCUIT_LOADER(connectionType, deviceNumber, circuitPath)
-%     User input require if no inputs to function
-%     Options for connectionType are 'GB' and 'USB'
-%     circuitPath does not require an extension.
-%     connectionType defaults to 'GB'
-%     deviceNumber defaults to 1
-%     Note: code must be modified to work with non-RP2 devices or with *.rco files
+% RP = CIRCUIT_LOADER(connectionType, deviceNumber, circuitPath, mode)
+%
+%   mode (optional, default 'auto'):
+%     'auto'  — use RPco.X (old behaviour). If Workbench is open, warn but
+%               still proceed — old scripts are unaffected.
+%     'eeg'   — require Workbench; return TDEVProxy instead of RPco.X so
+%               all RP.* calls route through TDevAcc while Workbench keeps
+%               hardware ownership. Use this for EEG recording sessions.
+%
+%   connectionType: 'GB' (default) or 'USB'
+%   deviceNumber:   defaults to 1
+%   circuitPath:    .rcx extension optional
 
-    if nargin == 3
-        
+    eegMode = false;   % default: old RPco.X behaviour
+
+    if nargin == 4
+
+        connectionType = varargin{1};
+        deviceNumber   = varargin{2};
+        circuitPath    = varargin{3};
+        eegMode        = strcmpi(varargin{4}, 'eeg');
+
+    elseif nargin == 3
+
         connectionType = varargin{1};
         deviceNumber = varargin{2};
         circuitPath = varargin{3};
-        
+
     elseif nargin == 1
-        
+
         connectionType = 'GB';
-        deviceNumber = 1;    
+        deviceNumber = 1;
         circuitPath = varargin{1};
-        
+
     elseif nargin == 0
 
         % path - set this to wherever the examples are stored
@@ -59,13 +74,43 @@ function [RP,varargout] = Circuit_Loader(varargin)
     if size(strfind(circuitPath,'.rcx')) == 0
         circuitPath = strcat(circuitPath,'.rcx');
     end
-            
+
     % Error check for existing file
     fileExists=(exist(circuitPath,'file'));
     if fileExists==0
         disp('   File doesnt exist'); return;
     end
-    
+
+    % --- Workbench detection ---
+    try
+        DA = actxserver('TDevAcc.X');
+        wbRunning = (DA.ConnectServer('Local') == 1);
+        DA.CloseConnection;
+        delete(DA);
+    catch
+        wbRunning = false;
+    end
+
+    if eegMode
+        % Explicitly requested EEG/TDEVProxy mode.
+        if ~wbRunning
+            error(['Circuit_Loader: mode=''eeg'' requires OpenWorkbench to be ' ...
+                   'running. Open WorkBench.xpm first.']);
+        end
+        disp('Circuit_Loader: EEG mode — returning TDEVProxy (TDevAcc).');
+        addpath('C:\TDT\TDTMatlabSDK\TDTSDK\OpenExLive');
+        [RP, td] = TDEVProxy.createWithTDEV();  %#ok<NASGU>
+        varargout{1} = 7;
+        varargout{2} = 'Circuit loaded and running (TDEVProxy mode)';
+        return;
+    end
+
+    if wbRunning
+        warning(['Circuit_Loader: OpenWorkbench is open. Proceeding with RPco.X ' ...
+                 '(sound only). For EEG recording pass mode=''eeg''.']);
+    end
+
+    % --- RPco.X path (old behaviour, unchanged) ---
     % Load circuit onto device and run
     RP = actxcontrol('RPco.x',[5 5 26 26]);
     
