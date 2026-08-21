@@ -309,37 +309,66 @@ classdef TDT_GUI_v3_App_exported < matlab.apps.AppBase
 
         % Code that executes after component creation
         function startupFcn(app)
-            app.online = ~isfile('./OFFLINE');
-            global RP;
-            global whiteNoise_vector;
-            % global parameters;
-               
-            % save parameters;
-            path = strcat(pwd,'\Copy_of_full_5.rcx');
-            [RP,status,message] = Circuit_Loader(path);
-            statusNumbers = bitget(status,[1 2 3]);
-            if(  any(0 == statusNumbers ) )
-               idx = find(0==statusNumbers);
-               numOfError = idx(1);
-               if(1 == numOfError)
-                  message = strcat(message,sprintf('\nPlease restart the DTD system'));
-               end
-               selection = uiconfirm(app.UIFigure,message,'Error','Icon','error','Options',{'Ok'});
-               if(app.online)
-%                  close all force;
-                   quit force
-               end
-            end
-            Initialize_Selection("TX1");
-            Initialize_Selection("TX2");
-            Initialize_Selection("TX3");
-%             Update_Calibration(RP);
-            load mdb;
-            %update calibration tab screen
-            arrayfun(@(ii) setfield(app,strcat('FFOutput',num2str(ii),'EditField'),'Value',mdb.Calibration.FF2SpeakerMap(ii))  , [1:8]);
+             app.online = ~isfile('./OFFLINE');
+    global RP;
+    global RP_EEG;
+    global whiteNoise_vector;
+    % global parameters;
 
-            app.GainTable.Data = mdb.Calibration.GainTable;
-            whiteNoise_vector = randn(1,3000000);
+    % save parameters;
+    path = strcat(pwd,'\Copy_of_full_5.rcx');
+    [RP,status,message] = Circuit_Loader(path);
+
+    statusNumbers = bitget(status,[1 2 3]);
+    if(  any(0 == statusNumbers ) )
+       idx = find(0==statusNumbers);
+       numOfError = idx(1);
+       if(1 == numOfError)
+          message = strcat(message,sprintf('\nPlease restart the DTD system'));
+       end
+       selection = uiconfirm(app.UIFigure,message,'Error','Icon','error','Options',{'Ok'});
+       if(app.online)
+%                  close all force;
+           quit force
+       end
+    end
+
+    % EEG hardware (RA16_1) — connected directly via RPco.X, no
+    % OpenWorkbench required. Non-fatal: EEG-less behavioral/SNR
+    % sessions must still work if the RA16 isn't powered/connected.
+    RP_EEG = [];
+    try
+        eegCircuitPath = strcat(pwd,'\MedusaBaseStation.rcx');
+        RP_EEG_candidate = actxcontrol('RPco.x',[5 5 26 26]);
+        if ~RP_EEG_candidate.ConnectRA16('GB', 1)
+            error('ConnectRA16 failed.');
+        end
+        RP_EEG_candidate.Halt;
+        RP_EEG_candidate.ClearCOF;
+        if ~RP_EEG_candidate.LoadCOF(eegCircuitPath)
+            error('Failed to load EEG circuit: %s', eegCircuitPath);
+        end
+        RP_EEG_candidate.Run;
+        eegStatus = double(RP_EEG_candidate.GetStatus);
+        if ~all(bitget(eegStatus,1:3))
+            error('RA16 circuit not running (status=%d).', eegStatus);
+        end
+        RP_EEG = RP_EEG_candidate;
+    catch eegErr
+        warning('EEG hardware (RA16) not available: %s', eegErr.message);
+    end
+
+    Initialize_Selection("TX1");
+    Initialize_Selection("TX2");
+    Initialize_Selection("TX3");
+%             Update_Calibration(RP);
+    load mdb;
+    %update calibration tab screen
+    arrayfun(@(ii) setfield(app,strcat('FFOutput',num2str(ii),'EditField'),'Value',mdb.Calibration.FF2SpeakerMap(ii))  , [1:8]);
+
+    app.GainTable.Data = mdb.Calibration.GainTable;
+    whiteNoise_vector = randn(1,3000000);
+
             
         end
 
@@ -896,34 +925,41 @@ classdef TDT_GUI_v3_App_exported < matlab.apps.AppBase
 
         % Button pushed function: StartButton_Behavioral
         function StartButton_BehavioralPushed(app, event)
-            % app.StartButton_Behavioral.Enable = "off"
-            try
+          try
             PrepareBehavioralMdb(app)
-            BehavioralMain(app)
-            app.StartButton_Behavioral.Enable = "on";
-            
-            catch e
-                app.StartButton_Behavioral.Enable = "on";
-                 fprintf(2, 'Error occurred: %s\n', e.message);
-                 for i = 1:length(e.stack)                                                                          
-                     fprintf(2, 'File: %s, Name: %s, Line: %d\n', e.stack(i).file, e.stack(i).name, e.stack(i).line);  
-                 end
+    
+            % Route to EEG function for any EEG mode, otherwise standard behavioral
+            eegModes = {'quite - EEG', 'Noise - 0 or 90 - EEG'};
+            if ismember(app.ModesDropDown_Behavioral.Value, eegModes)
+                BehavioralMainEEG(app)
+            else
+                BehavioralMain(app)
             end
+    
+            app.StartButton_Behavioral.Enable = "on";
+        catch e
+            app.StartButton_Behavioral.Enable = "on";
+            fprintf(2, 'Error occurred: %s\n', e.message);
+            for i = 1:length(e.stack)
+                fprintf(2, 'File: %s, Name: %s, Line: %d\n', e.stack(i).file, e.stack(i).name, e.stack(i).line);
+            end
+        end
 
         end
 
         % Value changed function: ModesDropDown_Behavioral
         function ModesDropDown_BehavioralValueChanged(app, event)
             value = app.ModesDropDown_Behavioral.Value;
-            if strcmp(value,"Noise - 0 or 90")
+            noiseModes = {'Noise - 0 or 90', 'Noise - 0 or 90 - EEG'};
+            if ismember(value, noiseModes)
                 app.NoisedBEditField_2.Visible = "on";
                 app.NoiseOutputSelectionPanel_2.Visible = "on";
                 app.ChooseFolderButton_Behavioral_2.Visible = "on";
             else
                 app.NoisedBEditField_2.Visible = "off";
-                app.NoiseOutputSelectionPanel_2.Visible = "off"; 
+                app.NoiseOutputSelectionPanel_2.Visible = "off";
                 app.ChooseFolderButton_Behavioral_2.Visible = "off";
-
+        
             end
         end
 
@@ -943,7 +979,7 @@ classdef TDT_GUI_v3_App_exported < matlab.apps.AppBase
 
             % Create UIFigure and hide until all components are created
             app.UIFigure = uifigure('Visible', 'off');
-            app.UIFigure.Color = [0.129411764705882 0.129411764705882 0.129411764705882];
+            app.UIFigure.Color = [0.8 0.8 0.8];
             app.UIFigure.Position = [100 100 922 700];
             app.UIFigure.Name = 'MATLAB App';
 
@@ -1604,7 +1640,7 @@ classdef TDT_GUI_v3_App_exported < matlab.apps.AppBase
 
             % Create ModesDropDown_Behavioral
             app.ModesDropDown_Behavioral = uidropdown(app.BehaviorualTab);
-            app.ModesDropDown_Behavioral.Items = {'Baseline - quite', 'Noise - 0 or 90'};
+            app.ModesDropDown_Behavioral.Items = {'Baseline - quite', 'Noise - 0 or 90', 'quite - EEG', 'Noise - 0 or 90 - EEG'};
             app.ModesDropDown_Behavioral.ValueChangedFcn = createCallbackFcn(app, @ModesDropDown_BehavioralValueChanged, true);
             app.ModesDropDown_Behavioral.Position = [168 547 145 22];
             app.ModesDropDown_Behavioral.Value = 'Baseline - quite';
@@ -1624,8 +1660,7 @@ classdef TDT_GUI_v3_App_exported < matlab.apps.AppBase
             % Create SNRFinderTab
             app.SNRFinderTab = uitab(app.TabGroup);
             app.SNRFinderTab.Title = 'SNR Finder';
-            app.SNRFinderTab.BackgroundColor = [0.129411764705882 0.129411764705882 0.129411764705882];
-            app.SNRFinderTab.ForegroundColor = [0.850980392156863 0.850980392156863 0.850980392156863];
+            app.SNRFinderTab.BackgroundColor = [0.8 0.8 0.8];
 
             % Create Panel
             app.Panel = uipanel(app.SNRFinderTab);

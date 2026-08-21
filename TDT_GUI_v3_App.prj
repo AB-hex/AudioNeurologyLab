@@ -8,7 +8,7 @@
     <param.icons />
     <param.summary />
     <param.description />
-    <param.screenshot>C:\Users\Lab\AppData\Local\Temp\tp05d7eea6_e203_441e_a24d_fc0c95f8380c.png</param.screenshot>
+    <param.screenshot />
     <param.version>1.0</param.version>
     <param.products.name />
     <param.products.id />
@@ -24,6 +24,7 @@
       <param.icons />
       <param.summary />
       <param.description />
+      <param.screenshot />
       <param.version />
       <param.products.name />
       <param.products.id />
